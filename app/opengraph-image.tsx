@@ -19,7 +19,7 @@ export default function OpengraphImage() {
           gap: 18,
         }}
       >
-        <div style={{ color: "#dbe89c", fontSize: 30, letterSpacing: 7 }}>TUTOROS</div>
+        <div style={{ color: "#dbe89c", fontSize: 30, letterSpacing: 7 }}>TUTOROS 1.0</div>
         <div style={{ fontSize: 64 }}>Every session shapes the next.</div>
       </div>
     ),
