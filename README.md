@@ -1,8 +1,9 @@
 # TutorOS
 
 TutorOS turns what actually happened in a tutoring session into the next teaching decision,
-the next lesson brief, and an evidence-grounded parent update. Version 0.8.0 adds a live
-three-session learner trajectory and explicit tutor sign-off to the judge-ready, no-login workflow.
+the next lesson brief, and an evidence-grounded parent update. Version 0.9.0 is the deployment
+candidate: operational health, security headers, privacy guidance, and production preflight now
+surround the judge-ready, no-login workflow.
 
 ## Evidence chain
 
@@ -95,12 +96,18 @@ closed-loop provenance checks. It records expected and observed behavior for eve
 its category totals from the results, and fails the benchmark command if any regression appears.
 It is a product regression suite, not a claim that TutorOS is a validated learning-science model.
 
+The deployment candidate adds a no-store health contract, a strict canonical-URL preflight,
+browser security headers, generation-request size limits, graceful fallback pages, and an explicit
+privacy notice. The app remains useful without `OPENAI_API_KEY`; that credential enables only the
+three optional spark-marked generation actions.
+
 ## Verify
 
-The current suite contains 58 passing tests, including the three-session trajectory and sign-off
-boundaries, the 12/12 benchmark contract, mastery
+The current suite contains 72 passing tests, including deployment readiness, health and security
+contracts, API request hardening, three-session trajectory and sign-off boundaries, the 12/12
+benchmark contract, mastery
 boundaries and rollover, next-session differentiation and provenance, Honesty Gate regressions,
-both API routes, and deployment URL normalization.
+generation routes, and deployment URL normalization.
 
 ```bash
 pnpm typecheck
@@ -110,17 +117,45 @@ pnpm test
 pnpm build
 ```
 
+For a production candidate environment, validate the final canonical URL separately:
+
+```bash
+NEXT_PUBLIC_SITE_URL=https://your-final-domain.example pnpm deployment:check
+```
+
+This command intentionally fails for missing, malformed, HTTP, credential-bearing, or local URLs.
+It reports `OPENAI_API_KEY` as an optional capability and never prints its value.
+
 ## Project structure
 
 - `app/` — Next.js page, layout, global styles, and metadata routes.
-- `app/api/lesson-plan/` and `app/api/parent-report/` — validated server-only GPT-5.6 endpoints.
+- `app/api/` — health plus validated, no-store server-only GPT-5.6 endpoints.
 - `src/logic/` — domain model, trajectory and sign-off engines, benchmark, fixtures, and tests.
+- `lib/deployment/` — production readiness and browser security contracts.
 - `lib/seo/` — shared metadata and structured-data helpers.
 - `TUTOROS_EDUCATION_PLAN.md` — hackathon product and delivery plan.
 
-## Deploy
+## Deploy to Vercel
 
-Push to a Vercel-linked Git repository or run `vercel deploy`. Set
-`NEXT_PUBLIC_SITE_URL` to the deployed canonical URL and `OPENAI_API_KEY` to enable the two live
-GPT-5.6 endpoints across three UI actions. Without a configured canonical URL, metadata truthfully
-falls back to `http://localhost:3000` rather than publishing an example domain.
+1. Import this repository into Vercel as a Next.js project.
+2. Set `NEXT_PUBLIC_SITE_URL` to the final public HTTPS URL for Production and Preview as
+   appropriate. Do not use localhost or a placeholder URL for Production.
+3. Optionally set the server-only `OPENAI_API_KEY` to enable the two generation endpoints across
+   three UI actions. Never expose it with a `NEXT_PUBLIC_` prefix.
+4. Run `pnpm deployment:check`, `pnpm benchmark`, and `pnpm build` against the candidate
+   environment before promoting it.
+5. Deploy through the linked Git branch or `vercel deploy`.
+
+After deployment, verify:
+
+```bash
+curl -i https://your-final-domain.example/api/health
+curl -I https://your-final-domain.example/
+```
+
+The health response should be `200`, show version `0.9.0`, report the real `12/12` Evidence
+Integrity Benchmark, and describe live generation only as `configured` or
+`optional_not_configured`. Confirm `/privacy`, `/manifest.webmanifest`, an unknown route, the
+credential-free judge path, tutor sign-off, and mobile layout. Generation endpoints should return
+an actionable `503` when the optional key is absent. No live deployment URL is claimed here until
+one has actually been created and smoke-tested.

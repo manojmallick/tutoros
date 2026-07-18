@@ -14,10 +14,13 @@ const validContext = {
   strugglingWith: tuesdayScenario.session.currentStruggle,
 };
 
-function post(body: string) {
+function post(body: string, contentLength?: number) {
   return new Request("http://localhost/api/lesson-plan", {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: {
+      "content-type": "application/json",
+      ...(contentLength ? { "content-length": String(contentLength) } : {}),
+    },
     body,
   });
 }
@@ -33,11 +36,22 @@ describe("POST /api/lesson-plan", () => {
     );
 
     expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toEqual({
       plan: tuesdayScenario.lessonPlan,
       model: "gpt-5.6-sol",
     });
     expect(generate).toHaveBeenCalledWith(validContext);
+  });
+
+  it("rejects declared request bodies above 32 KB without reading them", async () => {
+    const generate = vi.fn<LessonPlanGenerator>();
+    const response = await createLessonPlanHandler({ generate })(post("{}", 32 * 1024 + 1));
+
+    expect(response.status).toBe(413);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect((await response.json()).error.code).toBe("request_too_large");
+    expect(generate).not.toHaveBeenCalled();
   });
 
   it("rejects malformed JSON before generation", async () => {

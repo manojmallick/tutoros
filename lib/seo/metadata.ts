@@ -3,14 +3,14 @@ import { resolveSiteUrl } from "./site-url";
 
 export function baseMetadata(): Metadata {
   return {
-    title: "TutorOS — Learner trajectory with tutor sign-off",
+    title: "TutorOS — Deployment candidate for evidence-grounded tutoring",
     description:
-      "Explore three evidence-grounded tutoring sessions, a reproducible integrity benchmark, and explicit tutor sign-off.",
+      "Explore a privacy-conscious synthetic tutoring workflow with operational health, a 12/12 integrity benchmark, and tutor sign-off.",
     metadataBase: new URL(resolveSiteUrl()),
     openGraph: {
-      title: "TutorOS — Three-session trajectory with human sign-off",
+      title: "TutorOS v0.9.0 — Deployment candidate",
       description:
-        "A judge-ready synthetic tutoring workflow with measured learner trajectory, evidence provenance, and tutor review.",
+        "A judge-ready synthetic tutoring workflow with deployment health, measured evidence provenance, and human review.",
       type: "website",
     },
     twitter: {

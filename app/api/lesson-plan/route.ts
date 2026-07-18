@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
 import {
   generateLessonPlan,
   LessonPlanGenerationError,
   type LessonPlanGenerator,
 } from "@/src/logic/generate-lesson-plan";
 import { LessonPlanRequestSchema } from "@/src/logic/lesson-plan";
+import { declaredBodyTooLarge, noStoreJson } from "@/lib/http/api-response";
 
 type RouteDependencies = {
   generate: LessonPlanGenerator;
@@ -20,7 +20,7 @@ function errorResponse(
   message: string,
   fields?: Record<string, string>,
 ) {
-  return NextResponse.json(
+  return noStoreJson(
     { error: { code, message, ...(fields ? { fields } : {}) } },
     { status },
   );
@@ -30,6 +30,10 @@ export function createLessonPlanHandler(
   dependencies: RouteDependencies = defaultDependencies,
 ) {
   return async function lessonPlanHandler(request: Request) {
+    if (declaredBodyTooLarge(request)) {
+      return errorResponse(413, "request_too_large", "Keep lesson-plan requests below 32 KB.");
+    }
+
     let body: unknown;
 
     try {
@@ -58,7 +62,7 @@ export function createLessonPlanHandler(
 
     try {
       const result = await dependencies.generate(parsed.data);
-      return NextResponse.json(result);
+      return noStoreJson(result);
     } catch (error) {
       if (error instanceof LessonPlanGenerationError) {
         if (error.code === "missing_api_key") {

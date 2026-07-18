@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import {
   ParentReportGenerationError,
   generateParentReport,
@@ -6,6 +5,7 @@ import {
 } from "@/src/logic/generate-parent-report";
 import { calculateMasteryDecision } from "@/src/logic/mastery";
 import { ParentReportRequestSchema } from "@/src/logic/parent-report";
+import { declaredBodyTooLarge, noStoreJson } from "@/lib/http/api-response";
 
 type RouteDependencies = {
   generate: ParentReportGenerator;
@@ -21,7 +21,7 @@ function errorResponse(
   message: string,
   fields?: Record<string, string>,
 ) {
-  return NextResponse.json(
+  return noStoreJson(
     { error: { code, message, ...(fields ? { fields } : {}) } },
     { status },
   );
@@ -31,6 +31,10 @@ export function createParentReportHandler(
   dependencies: RouteDependencies = defaultDependencies,
 ) {
   return async function parentReportHandler(request: Request) {
+    if (declaredBodyTooLarge(request)) {
+      return errorResponse(413, "request_too_large", "Keep parent-report requests below 32 KB.");
+    }
+
     let body: unknown;
 
     try {
@@ -64,7 +68,7 @@ export function createParentReportHandler(
 
     try {
       const result = await dependencies.generate(context);
-      return NextResponse.json(result);
+      return noStoreJson(result);
     } catch (error) {
       if (error instanceof ParentReportGenerationError) {
         if (error.code === "missing_api_key") {

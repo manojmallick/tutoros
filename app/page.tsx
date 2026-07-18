@@ -164,7 +164,11 @@ export default function Home() {
       <footer>
         <a className="brand footer-brand" href="#top"><span className="brand-mark" aria-hidden="true">T</span><span>TutorOS</span></a>
         <p>A runnable foundation for tutoring that follows the evidence.</p>
-        <span>v0.8.0 · Three-session trajectory + tutor sign-off</span>
+        <nav className="footer-links" aria-label="Deployment links">
+          <a href="/privacy">Privacy</a>
+          <a href="/api/health">Health</a>
+        </nav>
+        <span>v0.9.0 · Deployment candidate</span>
       </footer>
     </main>
   );
