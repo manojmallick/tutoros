@@ -44,6 +44,22 @@ export type {
   NextSessionBrief,
   NextSessionBriefInput,
 } from "./next-session-brief";
+export {
+  EVIDENCE_BENCHMARK_FIXTURE_SET,
+  EVIDENCE_BENCHMARK_VERSION,
+  EvidenceBenchmarkCategorySchema,
+  EvidenceBenchmarkReportSchema,
+  EvidenceBenchmarkResultSchema,
+  evidenceIntegrityBenchmarkCases,
+  formatEvidenceBenchmarkReport,
+  runEvidenceIntegrityBenchmark,
+  summarizeEvidenceBenchmarkResults,
+} from "./evidence-integrity-benchmark";
+export type {
+  EvidenceBenchmarkCategory,
+  EvidenceBenchmarkReport,
+  EvidenceBenchmarkResult,
+} from "./evidence-integrity-benchmark";
 export type {
   EvidenceReference,
   HonestyGateResult,
