@@ -1,8 +1,10 @@
-import { tuesdayScenario, workflowStages } from "@/src/logic";
+import { calculateMasteryDecision, tuesdayScenario, workflowStages } from "@/src/logic";
 import { LessonPlanWorkspace } from "@/app/components/lesson-plan-workspace";
+import { SessionEvidenceWorkspace } from "@/app/components/session-evidence-workspace";
 
 export default function Home() {
   const scenario = tuesdayScenario;
+  const mastery = calculateMasteryDecision(scenario.evidence);
 
   return (
     <main>
@@ -55,8 +57,8 @@ export default function Home() {
           </div>
           <div className="brief-footer">
             <div><span>Session</span><strong>{scenario.session.durationMinutes} min</strong></div>
-            <div><span>Review</span><strong>In 3 days</strong></div>
-            <div><span>Evidence</span><strong>{scenario.evidence.length} moments</strong></div>
+            <div><span>Review</span><strong>In {mastery.intervalDays} days</strong></div>
+            <div><span>Evidence</span><strong>{scenario.evidence.attempts.length} attempts</strong></div>
           </div>
         </aside>
       </section>
@@ -104,38 +106,10 @@ export default function Home() {
             initialPlan={scenario.lessonPlan}
           />
 
-          <article className="panel evidence-panel">
-            <header className="panel-header">
-              <div><span className="panel-index">03</span><h3>Session evidence</h3></div>
-              <span className="status status-neutral">Observed</span>
-            </header>
-            <div className="evidence-list">
-              {scenario.evidence.map((item) => (
-                <div className={`evidence-item ${item.tone}`} key={item.label}>
-                  <span className="evidence-icon" aria-hidden="true">{item.tone === "positive" ? "✓" : "!"}</span>
-                  <div><strong>{item.label}</strong><p>{item.observation}</p></div>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className="panel mastery-panel">
-            <header className="panel-header">
-              <div><span className="panel-index">04</span><h3>Mastery decision</h3></div>
-              <span className="status status-watch">Review</span>
-            </header>
-            <div className="mastery-score">
-              <div className="score-ring" style={{ "--score": `${scenario.mastery.score * 3.6}deg` } as React.CSSProperties}>
-                <span><strong>{scenario.mastery.score}%</strong><small>confidence</small></span>
-              </div>
-              <div className="mastery-copy">
-                <span className="mini-label">{scenario.mastery.topic}</span>
-                <strong>{scenario.mastery.status}</strong>
-                <p>{scenario.mastery.reason}</p>
-              </div>
-            </div>
-            <div className="review-callout"><span>↻</span><div><strong>{scenario.mastery.nextReview}</strong><p>Bring this topic into the opening warm-up.</p></div></div>
-          </article>
+          <SessionEvidenceWorkspace
+            initialEvidence={scenario.evidence}
+            initialDecision={mastery}
+          />
 
           <article className="panel report-panel">
             <header className="panel-header">
@@ -147,7 +121,7 @@ export default function Home() {
               <blockquote>{scenario.parentReport}</blockquote>
               <div className="report-proof">
                 <span className="proof-icon" aria-hidden="true">✓</span>
-                <div><strong>Grounded in {scenario.evidence.length} session observations</strong><span>No generic praise. No softened struggle.</span></div>
+                <div><strong>Grounded in {scenario.evidence.attempts.length} recorded attempts</strong><span>No generic praise. No softened struggle.</span></div>
               </div>
             </div>
           </article>
@@ -157,7 +131,7 @@ export default function Home() {
       <footer>
         <a className="brand footer-brand" href="#top"><span className="brand-mark" aria-hidden="true">T</span><span>TutorOS</span></a>
         <p>A runnable foundation for tutoring that follows the evidence.</p>
-        <span>v0.2.0 · GPT-5.6 lesson planning</span>
+        <span>v0.3.0 · Session evidence and mastery</span>
       </footer>
     </main>
   );
