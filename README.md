@@ -1,8 +1,8 @@
 # TutorOS
 
 TutorOS turns what actually happened in a tutoring session into the next teaching decision
-and an evidence-grounded parent update. Version 0.3.0 adds editable session evidence and a
-deterministic mastery decision to the GPT-5.6 lesson-plan walkthrough.
+and an evidence-grounded parent update. Version 0.4.0 links the editable session evidence and
+deterministic mastery decision to a GPT-5.6 parent-report workflow with a named Honesty Gate.
 
 ## Evidence chain
 
@@ -31,6 +31,13 @@ The key is read only by `POST /api/lesson-plan` on the server and is never sent 
 The route uses the OpenAI Responses API, the `gpt-5.6` model alias, and Zod Structured Outputs
 to produce a validated 45-minute plan with four increasing-difficulty practice problems.
 
+`POST /api/parent-report` uses the same server-only Responses API pattern. It returns a validated
+3-4 sentence draft plus the IDs of the session attempts used as evidence. The deterministic
+Honesty Gate runs before that draft reaches the browser: it rejects unknown evidence, generic
+praise, softened non-secure mastery, and reports that omit a recorded difficulty. The UI shows the
+gate result and source observations explicitly, retains the last safe draft on failure, and keeps
+the final wording editable for tutor review.
+
 The session evidence panel records an outcome, support level, and observation for each practice
 attempt. Its mastery scheduler is a transparent TutorOS product heuristic: it weights outcomes by
 the support used, schedules developing evidence sooner, and forces a three-day review when recent
@@ -50,7 +57,7 @@ pnpm build
 ## Project structure
 
 - `app/` — Next.js page, layout, global styles, and metadata routes.
-- `app/api/lesson-plan/` — validated server-only GPT-5.6 generation endpoint.
+- `app/api/lesson-plan/` and `app/api/parent-report/` — validated server-only GPT-5.6 endpoints.
 - `src/logic/` — TutorOS domain model, synthetic scenario, and unit tests.
 - `lib/seo/` — shared metadata and structured-data helpers.
 - `TUTOROS_EDUCATION_PLAN.md` — hackathon product and delivery plan.

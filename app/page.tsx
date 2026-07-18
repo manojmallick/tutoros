@@ -1,10 +1,26 @@
-import { calculateMasteryDecision, tuesdayScenario, workflowStages } from "@/src/logic";
+import {
+  calculateMasteryDecision,
+  honestyGateCheck,
+  tuesdayScenario,
+  workflowStages,
+} from "@/src/logic";
 import { LessonPlanWorkspace } from "@/app/components/lesson-plan-workspace";
 import { SessionEvidenceWorkspace } from "@/app/components/session-evidence-workspace";
 
 export default function Home() {
   const scenario = tuesdayScenario;
   const mastery = calculateMasteryDecision(scenario.evidence);
+  const honestyCheck = honestyGateCheck(scenario.parentReport, {
+    studentName: scenario.student.name,
+    subject: scenario.student.subject,
+    nextFocus: scenario.session.currentFocus,
+    evidence: scenario.evidence,
+    mastery,
+  });
+
+  if (!honestyCheck.passed) {
+    throw new Error(`Synthetic parent report failed the Honesty Gate: ${honestyCheck.reason}`);
+  }
 
   return (
     <main>
@@ -107,31 +123,21 @@ export default function Home() {
           />
 
           <SessionEvidenceWorkspace
+            studentName={scenario.student.name}
+            subject={scenario.student.subject}
+            nextFocus={scenario.session.currentFocus}
             initialEvidence={scenario.evidence}
             initialDecision={mastery}
+            initialReport={scenario.parentReport}
+            initialHonestyCheck={honestyCheck}
           />
-
-          <article className="panel report-panel">
-            <header className="panel-header">
-              <div><span className="panel-index">05</span><h3>Parent update</h3></div>
-              <span className="status status-honest">Evidence grounded</span>
-            </header>
-            <div className="report-body">
-              <span className="quote-mark" aria-hidden="true">“</span>
-              <blockquote>{scenario.parentReport}</blockquote>
-              <div className="report-proof">
-                <span className="proof-icon" aria-hidden="true">✓</span>
-                <div><strong>Grounded in {scenario.evidence.attempts.length} recorded attempts</strong><span>No generic praise. No softened struggle.</span></div>
-              </div>
-            </div>
-          </article>
         </div>
       </section>
 
       <footer>
         <a className="brand footer-brand" href="#top"><span className="brand-mark" aria-hidden="true">T</span><span>TutorOS</span></a>
         <p>A runnable foundation for tutoring that follows the evidence.</p>
-        <span>v0.3.0 · Session evidence and mastery</span>
+        <span>v0.4.0 · Evidence-grounded parent reports</span>
       </footer>
     </main>
   );

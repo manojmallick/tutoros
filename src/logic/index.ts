@@ -11,6 +11,7 @@ export {
   AttemptOutcomeSchema,
   calculateMasteryDecision,
   classifyMasteryScore,
+  MasteryDecisionSchema,
   SessionAttemptSchema,
   SessionEvidenceSchema,
   SupportLevelSchema,
@@ -23,3 +24,21 @@ export type {
   SessionEvidence,
   SupportLevel,
 } from "./mastery";
+export { honestyGateCheck } from "./honesty-gate";
+export {
+  buildParentReportInput,
+  EvidenceReferenceSchema,
+  HonestyGateResultSchema,
+  PARENT_REPORT_INSTRUCTIONS,
+  PARENT_REPORT_MODEL,
+  ParentReportDraftSchema,
+  ParentReportGenerationSchema,
+  ParentReportRequestSchema,
+} from "./parent-report";
+export type {
+  EvidenceReference,
+  HonestyGateResult,
+  ParentReportDraft,
+  ParentReportGeneration,
+  ParentReportRequest,
+} from "./parent-report";

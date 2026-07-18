@@ -45,18 +45,23 @@ export type SessionEvidence = z.infer<typeof SessionEvidenceSchema>;
 
 export type MasteryStatus = "Needs reinforcement" | "Developing" | "Secure";
 
-export type MasteryDecision = {
-  topic: string;
-  score: number;
-  status: MasteryStatus;
-  intervalDays: 3 | 7 | 14;
-  nextReviewDate: string;
-  reason: string;
-  signals: {
-    declining: boolean;
-    independentMiss: boolean;
-  };
-};
+export const MasteryDecisionSchema = z.object({
+  topic: z.string().trim().min(2).max(120),
+  score: z.number().int().min(0).max(100),
+  status: z.enum(["Needs reinforcement", "Developing", "Secure"]),
+  intervalDays: z.union([z.literal(3), z.literal(7), z.literal(14)]),
+  nextReviewDate: z.string().refine(
+    (value) => parseUtcDate(value) !== null,
+    "Use a real next-review date in YYYY-MM-DD format.",
+  ),
+  reason: z.string().trim().min(2).max(500),
+  signals: z.object({
+    declining: z.boolean(),
+    independentMiss: z.boolean(),
+  }),
+});
+
+export type MasteryDecision = z.infer<typeof MasteryDecisionSchema>;
 
 const outcomeWeights: Record<AttemptOutcome, number> = {
   correct: 1,
