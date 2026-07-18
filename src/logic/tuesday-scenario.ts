@@ -1,5 +1,6 @@
 import type { LessonPlan } from "./lesson-plan";
 import type { SessionEvidence } from "./mastery";
+import type { ParentReportDraft } from "./parent-report";
 
 export type WorkflowStage = {
   id: string;
@@ -24,7 +25,7 @@ export type TuesdayScenario = {
   };
   lessonPlan: LessonPlan;
   evidence: SessionEvidence;
-  parentReport: string;
+  parentReport: ParentReportDraft;
 };
 
 export const workflowStages: WorkflowStage[] = [
@@ -149,6 +150,8 @@ export const tuesdayScenario: TuesdayScenario = {
       },
     ],
   },
-  parentReport:
-    "Maya made a real step forward today: by the third problem, she found 12 as a common denominator without a prompt. The method became harder when we removed the visual model, so we will revisit it briefly next session before moving on. Next, we will practise choosing common denominators independently.",
+  parentReport: {
+    text: "Maya made a real step forward today: by the third problem, she found 12 as a common denominator without a prompt. The method became harder when we removed the visual model, so we will revisit it briefly next session before moving on. Next, we will practise choosing common denominators independently.",
+    referencedAttemptIds: ["practice-3", "practice-4"],
+  },
 };
