@@ -35,6 +35,15 @@ export {
   ParentReportGenerationSchema,
   ParentReportRequestSchema,
 } from "./parent-report";
+export {
+  deriveNextSessionBrief,
+  NextSessionBriefInputSchema,
+  NextSessionBriefSchema,
+} from "./next-session-brief";
+export type {
+  NextSessionBrief,
+  NextSessionBriefInput,
+} from "./next-session-brief";
 export type {
   EvidenceReference,
   HonestyGateResult,

@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, type ChangeEvent, type FormEvent } from "react";
+import { NextSessionBriefPanel } from "@/app/components/next-session-brief-panel";
 import {
   calculateMasteryDecision,
+  deriveNextSessionBrief,
   ParentReportGenerationSchema,
   SessionEvidenceSchema,
   type AttemptOutcome,
   type MasteryDecision,
   type HonestyGateResult,
+  type NextSessionBrief,
   type ParentReportDraft,
   type SessionEvidence,
   type SupportLevel,
@@ -16,11 +19,13 @@ import {
 type SessionEvidenceWorkspaceProps = {
   studentName: string;
   subject: string;
+  studentLevel: string;
   nextFocus: string;
   initialEvidence: SessionEvidence;
   initialDecision: MasteryDecision;
   initialReport: ParentReportDraft;
   initialHonestyCheck: HonestyGateResult;
+  initialNextSessionBrief: NextSessionBrief;
 };
 
 type RequestState = "idle" | "loading" | "success" | "error";
@@ -49,14 +54,18 @@ const supportLabels: Record<SupportLevel, string> = {
 export function SessionEvidenceWorkspace({
   studentName,
   subject,
+  studentLevel,
   nextFocus,
   initialEvidence,
   initialDecision,
   initialReport,
   initialHonestyCheck,
+  initialNextSessionBrief,
 }: SessionEvidenceWorkspaceProps) {
   const [evidence, setEvidence] = useState(initialEvidence);
   const [decision, setDecision] = useState(initialDecision);
+  const [nextSessionBrief, setNextSessionBrief] = useState(initialNextSessionBrief);
+  const [briefCurrent, setBriefCurrent] = useState(true);
   const [report, setReport] = useState(initialReport);
   const [honestyCheck, setHonestyCheck] = useState(initialHonestyCheck);
   const [reportCheckCurrent, setReportCheckCurrent] = useState(true);
@@ -76,6 +85,23 @@ export function SessionEvidenceWorkspace({
     setReportCheckCurrent(false);
     setReportMessage("The current report reflects earlier evidence. Generate a new update when ready.");
     setCopyState("idle");
+    setBriefCurrent(false);
+  };
+
+  const recomputeOutcome = (currentEvidence: SessionEvidence) => {
+    const currentDecision = calculateMasteryDecision(currentEvidence);
+    const currentBrief = deriveNextSessionBrief({
+      studentName,
+      subject,
+      studentLevel,
+      nextFocus,
+      evidence: currentEvidence,
+    });
+
+    setDecision(currentDecision);
+    setNextSessionBrief(currentBrief);
+    setBriefCurrent(true);
+    return currentDecision;
   };
 
   const copyReport = async () => {
@@ -111,7 +137,7 @@ export function SessionEvidenceWorkspace({
       return;
     }
 
-    setDecision(calculateMasteryDecision(result.data));
+    recomputeOutcome(result.data);
     setHasError(false);
     setMessage("Mastery decision updated from the recorded evidence.");
   };
@@ -127,8 +153,7 @@ export function SessionEvidenceWorkspace({
       return;
     }
 
-    const currentDecision = calculateMasteryDecision(result.data);
-    setDecision(currentDecision);
+    const currentDecision = recomputeOutcome(result.data);
     setReportState("loading");
     setReportMessage("GPT-5.6 is drafting an update and the Honesty Gate will check it…");
 
@@ -287,9 +312,15 @@ export function SessionEvidenceWorkspace({
         </div>
       </article>
 
+      <NextSessionBriefPanel
+        key={`${nextSessionBrief.scheduledFor}-${nextSessionBrief.decision.score}-${nextSessionBrief.evidenceSources.map((source) => source.attemptId).join("-")}`}
+        brief={nextSessionBrief}
+        isCurrent={briefCurrent}
+      />
+
       <article className="panel report-panel" id="parent-report-panel">
         <header className="panel-header">
-          <div><span className="panel-index">05</span><h3>Parent update</h3></div>
+          <div><span className="panel-index">06</span><h3>Parent update</h3></div>
           <span className={`status ${reportCheckCurrent ? "status-honest" : "status-watch"}`}>
             Honesty Gate {reportCheckCurrent ? "passed" : "review"}
           </span>

@@ -1,5 +1,6 @@
 import {
   calculateMasteryDecision,
+  deriveNextSessionBrief,
   honestyGateCheck,
   tuesdayScenario,
   workflowStages,
@@ -9,6 +10,13 @@ import { DemoWorkspace } from "@/app/components/demo-workspace";
 export default function Home() {
   const scenario = tuesdayScenario;
   const mastery = calculateMasteryDecision(scenario.evidence);
+  const nextSessionBrief = deriveNextSessionBrief({
+    studentName: scenario.student.name,
+    subject: scenario.student.subject,
+    studentLevel: scenario.student.level,
+    nextFocus: scenario.session.currentFocus,
+    evidence: scenario.evidence,
+  });
   const honestyCheck = honestyGateCheck(scenario.parentReport, {
     studentName: scenario.student.name,
     subject: scenario.student.subject,
@@ -112,6 +120,7 @@ export default function Home() {
         <DemoWorkspace
           studentName={scenario.student.name}
           subject={scenario.student.subject}
+          studentLevel={scenario.student.level}
           nextFocus={scenario.session.currentFocus}
           initialContext={{
             subject: scenario.student.subject,
@@ -125,13 +134,14 @@ export default function Home() {
           initialDecision={mastery}
           initialReport={scenario.parentReport}
           initialHonestyCheck={honestyCheck}
+          initialNextSessionBrief={nextSessionBrief}
         />
       </section>
 
       <footer>
         <a className="brand footer-brand" href="#top"><span className="brand-mark" aria-hidden="true">T</span><span>TutorOS</span></a>
         <p>A runnable foundation for tutoring that follows the evidence.</p>
-        <span>v0.5.0 · Judge-ready synthetic demo</span>
+        <span>v0.6.0 · Closed-loop next-session brief</span>
       </footer>
     </main>
   );

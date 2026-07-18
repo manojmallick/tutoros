@@ -48,8 +48,14 @@ export const workflowStages: WorkflowStage[] = [
     description: "Use observed performance to schedule the right topic at the right time.",
   },
   {
-    id: "report",
+    id: "next",
     number: "04",
+    title: "Shape the next lesson",
+    description: "Carry the review date, support level, and source evidence into the next plan.",
+  },
+  {
+    id: "report",
+    number: "05",
     title: "Update the parent",
     description: "Create a warm, honest update grounded in the session—not generic praise.",
   },
