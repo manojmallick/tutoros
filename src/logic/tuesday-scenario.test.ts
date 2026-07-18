@@ -18,7 +18,7 @@ describe("Tuesday tutoring scenario", () => {
 
   it("grounds the parent report in a recorded session observation", () => {
     expect(tuesdayScenario.parentReport).toContain("common denominator without a prompt");
-    expect(tuesdayScenario.evidence[0].observation).toContain(
+    expect(tuesdayScenario.evidence.attempts[2].observation).toContain(
       "common denominator independently",
     );
   });

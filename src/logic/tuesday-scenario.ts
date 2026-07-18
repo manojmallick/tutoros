@@ -1,4 +1,5 @@
 import type { LessonPlan } from "./lesson-plan";
+import type { SessionEvidence } from "./mastery";
 
 export type WorkflowStage = {
   id: string;
@@ -22,18 +23,7 @@ export type TuesdayScenario = {
     currentStruggle: string;
   };
   lessonPlan: LessonPlan;
-  evidence: Array<{
-    label: string;
-    observation: string;
-    tone: "positive" | "watch";
-  }>;
-  mastery: {
-    topic: string;
-    score: number;
-    status: string;
-    nextReview: string;
-    reason: string;
-  };
+  evidence: SessionEvidence;
   parentReport: string;
 };
 
@@ -125,24 +115,39 @@ export const tuesdayScenario: TuesdayScenario = {
     },
     totalMinutes: 45,
   },
-  evidence: [
-    {
-      label: "Breakthrough",
-      observation: "Maya found 12 as a common denominator independently on problem three.",
-      tone: "positive",
-    },
-    {
-      label: "Still difficult",
-      observation: "She added denominators directly when the final problem removed the visual model.",
-      tone: "watch",
-    },
-  ],
-  mastery: {
+  evidence: {
     topic: "Unlike denominators",
-    score: 62,
-    status: "Needs reinforcement",
-    nextReview: "Review in 3 days",
-    reason: "The method worked with support, but did not yet transfer to independent work.",
+    reviewedOn: "2026-07-14",
+    attempts: [
+      {
+        id: "practice-1",
+        prompt: "Use fraction bars to solve 1/3 + 1/6.",
+        outcome: "correct",
+        support: "modeled",
+        observation: "Renamed one third as two sixths after seeing the model.",
+      },
+      {
+        id: "practice-2",
+        prompt: "Solve 1/4 + 1/6 using a shared multiples list.",
+        outcome: "correct",
+        support: "prompted",
+        observation: "Selected 12 after one prompt to compare the lists.",
+      },
+      {
+        id: "practice-3",
+        prompt: "Solve 2/3 + 1/4 without a visual model.",
+        outcome: "correct",
+        support: "independent",
+        observation: "Found 12 as a common denominator independently.",
+      },
+      {
+        id: "practice-4",
+        prompt: "A recipe uses 3/4 cup oats and 2/3 cup nuts. How much altogether?",
+        outcome: "incorrect",
+        support: "independent",
+        observation: "Added denominators directly after the visual model was removed.",
+      },
+    ],
   },
   parentReport:
     "Maya made a real step forward today: by the third problem, she found 12 as a common denominator without a prompt. The method became harder when we removed the visual model, so we will revisit it briefly next session before moving on. Next, we will practise choosing common denominators independently.",
