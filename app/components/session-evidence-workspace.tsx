@@ -24,6 +24,7 @@ type SessionEvidenceWorkspaceProps = {
 };
 
 type RequestState = "idle" | "loading" | "success" | "error";
+type CopyState = "idle" | "success" | "error";
 
 type ApiErrorPayload = {
   error?: { message?: string };
@@ -64,6 +65,7 @@ export function SessionEvidenceWorkspace({
     "A safe sample is ready. Generate again after changing the session evidence.",
   );
   const [reportModel, setReportModel] = useState<string | null>(null);
+  const [copyState, setCopyState] = useState<CopyState>("idle");
   const [message, setMessage] = useState("Synthetic evidence is preloaded. Edit it, then update the decision.");
   const [hasError, setHasError] = useState(false);
 
@@ -73,6 +75,16 @@ export function SessionEvidenceWorkspace({
     setReportState("idle");
     setReportCheckCurrent(false);
     setReportMessage("The current report reflects earlier evidence. Generate a new update when ready.");
+    setCopyState("idle");
+  };
+
+  const copyReport = async () => {
+    try {
+      await navigator.clipboard.writeText(report.text);
+      setCopyState("success");
+    } catch {
+      setCopyState("error");
+    }
   };
 
   const updateAttempt = (
@@ -165,7 +177,7 @@ export function SessionEvidenceWorkspace({
 
   return (
     <>
-      <article className="panel evidence-panel">
+      <article className="panel evidence-panel" id="session-evidence">
         <header className="panel-header">
           <div><span className="panel-index">03</span><h3>Session evidence</h3></div>
           <span className="status status-neutral">Editable log</span>
@@ -249,7 +261,7 @@ export function SessionEvidenceWorkspace({
         </form>
       </article>
 
-      <article className="panel mastery-panel" aria-live="polite">
+      <article className="panel mastery-panel" id="mastery-decision" aria-live="polite">
         <header className="panel-header">
           <div><span className="panel-index">04</span><h3>Mastery decision</h3></div>
           <span className={`status ${decision.status === "Secure" ? "status-ready" : "status-watch"}`}>
@@ -275,7 +287,7 @@ export function SessionEvidenceWorkspace({
         </div>
       </article>
 
-      <article className="panel report-panel">
+      <article className="panel report-panel" id="parent-report-panel">
         <header className="panel-header">
           <div><span className="panel-index">05</span><h3>Parent update</h3></div>
           <span className={`status ${reportCheckCurrent ? "status-honest" : "status-watch"}`}>
@@ -291,6 +303,7 @@ export function SessionEvidenceWorkspace({
             onChange={(event) => {
               setReport((current) => ({ ...current, text: event.target.value }));
               setReportCheckCurrent(false);
+              setCopyState("idle");
               setReportMessage("Report edited. Review the wording before sending.");
             }}
             rows={5}
@@ -306,8 +319,19 @@ export function SessionEvidenceWorkspace({
               <span aria-hidden="true">{reportState === "loading" ? "···" : "✦"}</span>
               {reportState === "loading" ? "Checking with GPT-5.6" : "Generate parent update"}
             </button>
+            <button className="copy-button" type="button" onClick={copyReport}>
+              <span aria-hidden="true">⧉</span> Copy parent update
+            </button>
             <span>{reportModel ? `Model: ${reportModel}` : "Safe synthetic sample"}</span>
           </div>
+          <span className="live-action-note">Optional live GPT-5.6 action · the preloaded report remains available without it</span>
+          <p className={`copy-message ${copyState}`} role="status">
+            {copyState === "success"
+              ? "Parent update copied."
+              : copyState === "error"
+                ? "Copy was blocked by the browser. Select the editable report to copy it manually."
+                : ""}
+          </p>
           <p className={`generation-message ${reportState}`} role={reportState === "error" ? "alert" : "status"}>
             {reportMessage}
           </p>

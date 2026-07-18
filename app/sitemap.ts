@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
+import { resolveSiteUrl } from "@/lib/seo/site-url";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com";
+  const baseUrl = resolveSiteUrl();
 
   return [
     {

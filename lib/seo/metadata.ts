@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
+import { resolveSiteUrl } from "./site-url";
 
 export function baseMetadata(): Metadata {
   return {
-    title: "TutorOS — Every tutoring session shapes the next",
+    title: "TutorOS — Evidence from lesson plan to parent update",
     description:
-      "Turn tutoring-session evidence into focused lesson plans, mastery decisions, and honest parent updates.",
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com"),
+      "Explore a no-login synthetic tutoring session: build a lesson plan, record evidence, schedule review, and create an honest parent update.",
+    metadataBase: new URL(resolveSiteUrl()),
     openGraph: {
-      title: "TutorOS — Every tutoring session shapes the next",
+      title: "TutorOS — Evidence from lesson plan to parent update",
       description:
-        "Turn tutoring-session evidence into focused lesson plans, mastery decisions, and honest parent updates.",
+        "A judge-ready synthetic tutoring session with lesson planning, mastery scheduling, and an evidence-grounded parent update.",
       type: "website",
     },
     twitter: {
