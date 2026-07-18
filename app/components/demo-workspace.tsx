@@ -8,6 +8,7 @@ import type {
   LessonPlan,
   LessonPlanRequest,
   MasteryDecision,
+  NextSessionBrief,
   ParentReportDraft,
   SessionEvidence,
 } from "@/src/logic";
@@ -15,6 +16,7 @@ import type {
 type DemoWorkspaceProps = {
   studentName: string;
   subject: string;
+  studentLevel: string;
   nextFocus: string;
   initialContext: LessonPlanRequest;
   initialPlan: LessonPlan;
@@ -22,13 +24,15 @@ type DemoWorkspaceProps = {
   initialDecision: MasteryDecision;
   initialReport: ParentReportDraft;
   initialHonestyCheck: HonestyGateResult;
+  initialNextSessionBrief: NextSessionBrief;
 };
 
 const demoSteps = [
   { href: "#lesson-plan", number: "1", label: "Inspect plan" },
   { href: "#session-evidence", number: "2", label: "Edit evidence" },
   { href: "#mastery-decision", number: "3", label: "See decision" },
-  { href: "#parent-report-panel", number: "4", label: "Copy update" },
+  { href: "#next-session-brief", number: "4", label: "Open next" },
+  { href: "#parent-report-panel", number: "5", label: "Copy update" },
 ];
 
 export function DemoWorkspace(props: DemoWorkspaceProps) {
@@ -75,11 +79,13 @@ export function DemoWorkspace(props: DemoWorkspaceProps) {
           key={`outcome-${resetVersion}`}
           studentName={props.studentName}
           subject={props.subject}
+          studentLevel={props.studentLevel}
           nextFocus={props.nextFocus}
           initialEvidence={props.initialEvidence}
           initialDecision={props.initialDecision}
           initialReport={props.initialReport}
           initialHonestyCheck={props.initialHonestyCheck}
+          initialNextSessionBrief={props.initialNextSessionBrief}
         />
       </div>
     </>

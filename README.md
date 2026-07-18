@@ -1,15 +1,17 @@
 # TutorOS
 
-TutorOS turns what actually happened in a tutoring session into the next teaching decision
-and an evidence-grounded parent update. Version 0.5.0 packages the full evidence chain as a
-judge-ready, no-login synthetic demo with an artifact-first landing and guided 90-second path.
+TutorOS turns what actually happened in a tutoring session into the next teaching decision,
+the next lesson brief, and an evidence-grounded parent update. Version 0.6.0 closes the loop from
+session evidence to a judge-ready, no-login next-session plan with a guided 90-second path.
 
 ## Evidence chain
 
 1. Start with the previous lesson and the student&apos;s current struggle.
 2. Shape a focused 45-minute lesson plan.
 3. Capture concrete breakthroughs and difficulties during the session.
-4. Turn that evidence into a mastery decision and an honest parent update.
+4. Turn that evidence into a mastery decision with a transparent review date.
+5. Carry the decision into a five-minute retrieval task, support progression, next focus, mastery
+   check, and honest parent update.
 
 The public demo uses synthetic student data. Do not enter real student or minor data into this
 foundation build.
@@ -21,14 +23,18 @@ foundation build.
 3. In **Session evidence**, change Attempt 4 from Incorrect to Correct and select **Update mastery
    decision**. The evidence score becomes 85%, the status becomes Secure, and review moves from
    2026-07-17 to 2026-07-28.
-4. Follow **Copy update** to the final artifact. The existing safe sample remains available without
-   credentials; **Generate parent update** is an optional live GPT-5.6 action.
-5. Select **Reset demo** to restore Maya’s original plan, four attempts, 60% mastery decision,
-   three-day review, report text, and passed Honesty Gate.
+4. Open **Next session** to see the brief change from model-prompt-independent remediation to
+   independent retrieval, transfer, and stretch. Its review target and breakthrough remain linked
+   to the exact attempt observations; **Generate next lesson with GPT-5.6** is optional.
+5. Follow **Copy update** to the final artifact. The existing safe sample remains available without
+   credentials; **Generate parent update** is another optional live GPT-5.6 action.
+6. Select **Reset demo** to restore Maya’s original plan, four attempts, 60% mastery decision,
+   three-day next-session brief, report text, and passed Honesty Gate.
 
 The spark-marked generation actions require `OPENAI_API_KEY`. All other steps—including editing
 evidence, deterministic mastery scheduling, reviewing source traces, copying the report, and
-resetting the walkthrough—work without credentials.
+resetting the walkthrough—work without credentials. Editing evidence marks the brief stale until
+mastery is recomputed, so an old generated lesson cannot be mistaken for the current decision.
 
 ## Develop
 
@@ -61,10 +67,17 @@ attempts decline or an independent attempt is incorrect. It is deterministic, ru
 browser, and uses the recorded ISO session date for UTC-safe review dates. It is not presented as a
 validated learning-science model.
 
+The next-session brief is also deterministic and schema-validated. It selects the latest difficult
+attempt as the retrieval target (or the latest attempt after a secure session), retains the latest
+independent breakthrough as provenance, and differentiates the support sequence for Needs
+reinforcement, Developing, and Secure decisions. Its optional GPT-5.6 action reuses the validated
+lesson-plan endpoint; an API failure never replaces the credential-free brief.
+
 ## Verify
 
-The current suite contains 43 passing tests, including mastery boundaries and rollover,
-Honesty Gate regressions, both API routes, and deployment URL normalization.
+The current suite contains 49 passing tests, including mastery boundaries and rollover,
+next-session differentiation and provenance, Honesty Gate regressions, both API routes, and
+deployment URL normalization.
 
 ```bash
 pnpm typecheck
@@ -77,7 +90,7 @@ pnpm build
 
 - `app/` — Next.js page, layout, global styles, and metadata routes.
 - `app/api/lesson-plan/` and `app/api/parent-report/` — validated server-only GPT-5.6 endpoints.
-- `src/logic/` — TutorOS domain model, synthetic scenario, and unit tests.
+- `src/logic/` — TutorOS domain model, next-session decision engine, synthetic scenario, and tests.
 - `lib/seo/` — shared metadata and structured-data helpers.
 - `TUTOROS_EDUCATION_PLAN.md` — hackathon product and delivery plan.
 
@@ -85,5 +98,5 @@ pnpm build
 
 Push to a Vercel-linked Git repository or run `vercel deploy`. Set
 `NEXT_PUBLIC_SITE_URL` to the deployed canonical URL and `OPENAI_API_KEY` to enable the two live
-GPT-5.6 generation actions. Without a configured canonical URL, metadata truthfully falls back to
-`http://localhost:3000` rather than publishing an example domain.
+GPT-5.6 endpoints across three UI actions. Without a configured canonical URL, metadata truthfully
+falls back to `http://localhost:3000` rather than publishing an example domain.
