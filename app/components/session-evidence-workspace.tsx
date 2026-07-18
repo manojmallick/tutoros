@@ -2,18 +2,25 @@
 
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { NextSessionBriefPanel } from "@/app/components/next-session-brief-panel";
+import { LearnerTrajectoryPanel } from "@/app/components/learner-trajectory-panel";
 import {
   calculateMasteryDecision,
+  createTutorSignOff,
   deriveNextSessionBrief,
+  deriveLearnerTrajectory,
+  honestyGateCheck,
   ParentReportGenerationSchema,
   SessionEvidenceSchema,
   type AttemptOutcome,
   type MasteryDecision,
   type HonestyGateResult,
+  type LearnerTrajectory,
+  type LearnerTrajectorySession,
   type NextSessionBrief,
   type ParentReportDraft,
   type SessionEvidence,
   type SupportLevel,
+  type TutorSignOff,
 } from "@/src/logic";
 
 type SessionEvidenceWorkspaceProps = {
@@ -26,6 +33,8 @@ type SessionEvidenceWorkspaceProps = {
   initialReport: ParentReportDraft;
   initialHonestyCheck: HonestyGateResult;
   initialNextSessionBrief: NextSessionBrief;
+  initialTrajectory: LearnerTrajectory;
+  priorTrajectorySessions: LearnerTrajectorySession[];
 };
 
 type RequestState = "idle" | "loading" | "success" | "error";
@@ -61,11 +70,15 @@ export function SessionEvidenceWorkspace({
   initialReport,
   initialHonestyCheck,
   initialNextSessionBrief,
+  initialTrajectory,
+  priorTrajectorySessions,
 }: SessionEvidenceWorkspaceProps) {
   const [evidence, setEvidence] = useState(initialEvidence);
   const [decision, setDecision] = useState(initialDecision);
   const [nextSessionBrief, setNextSessionBrief] = useState(initialNextSessionBrief);
   const [briefCurrent, setBriefCurrent] = useState(true);
+  const [trajectory, setTrajectory] = useState(initialTrajectory);
+  const [trajectoryCurrent, setTrajectoryCurrent] = useState(true);
   const [report, setReport] = useState(initialReport);
   const [honestyCheck, setHonestyCheck] = useState(initialHonestyCheck);
   const [reportCheckCurrent, setReportCheckCurrent] = useState(true);
@@ -75,6 +88,11 @@ export function SessionEvidenceWorkspace({
   );
   const [reportModel, setReportModel] = useState<string | null>(null);
   const [copyState, setCopyState] = useState<CopyState>("idle");
+  const [signOff, setSignOff] = useState<TutorSignOff | null>(null);
+  const [signOffMessage, setSignOffMessage] = useState(
+    "Review the current evidence, next-session brief, and parent wording before sign-off.",
+  );
+  const [signOffError, setSignOffError] = useState(false);
   const [message, setMessage] = useState("Synthetic evidence is preloaded. Edit it, then update the decision.");
   const [hasError, setHasError] = useState(false);
 
@@ -86,6 +104,10 @@ export function SessionEvidenceWorkspace({
     setReportMessage("The current report reflects earlier evidence. Generate a new update when ready.");
     setCopyState("idle");
     setBriefCurrent(false);
+    setTrajectoryCurrent(false);
+    setSignOff(null);
+    setSignOffError(false);
+    setSignOffMessage("Evidence changed. Update mastery, then sign off the refreshed decision packet.");
   };
 
   const recomputeOutcome = (currentEvidence: SessionEvidence) => {
@@ -97,19 +119,79 @@ export function SessionEvidenceWorkspace({
       nextFocus,
       evidence: currentEvidence,
     });
+    const currentTrajectory = deriveLearnerTrajectory([
+      ...priorTrajectorySessions,
+      { sessionId: "session-3", label: "Tuesday · Transfer check", evidence: currentEvidence },
+    ]);
 
     setDecision(currentDecision);
     setNextSessionBrief(currentBrief);
     setBriefCurrent(true);
+    setTrajectory(currentTrajectory);
+    setTrajectoryCurrent(true);
+    setSignOff(null);
+    setSignOffError(false);
+    setSignOffMessage("Decision packet refreshed. Tutor sign-off is required before copying.");
     return currentDecision;
   };
 
   const copyReport = async () => {
+    if (!signOff) {
+      setCopyState("error");
+      return;
+    }
+
     try {
       await navigator.clipboard.writeText(report.text);
       setCopyState("success");
     } catch {
       setCopyState("error");
+    }
+  };
+
+  const signOffDecisionPacket = () => {
+    const result = SessionEvidenceSchema.safeParse(evidence);
+
+    if (!result.success) {
+      setSignOffError(true);
+      setSignOffMessage(result.error.issues[0]?.message ?? "Complete every evidence field before sign-off.");
+      return;
+    }
+
+    try {
+      const approved = createTutorSignOff({
+        tutorLabel: "Tutor review",
+        signedAt: new Date().toISOString(),
+        studentName,
+        subject,
+        studentLevel,
+        nextFocus,
+        evidence: result.data,
+        nextSessionBrief,
+        parentReport: report,
+      });
+      const refreshedCheck = honestyGateCheck(report, {
+        studentName,
+        subject,
+        nextFocus,
+        evidence: result.data,
+        mastery: nextSessionBrief.decision,
+      });
+
+      if (!refreshedCheck.passed) {
+        throw new Error(refreshedCheck.reason);
+      }
+
+      setHonestyCheck(refreshedCheck);
+      setReportCheckCurrent(true);
+      setSignOff(approved);
+      setSignOffError(false);
+      setSignOffMessage("Signed off. The current parent update is ready to copy.");
+      setCopyState("idle");
+    } catch (error) {
+      setSignOff(null);
+      setSignOffError(true);
+      setSignOffMessage(error instanceof Error ? error.message : "Unable to sign off this decision packet.");
     }
   };
 
@@ -312,6 +394,8 @@ export function SessionEvidenceWorkspace({
         </div>
       </article>
 
+      <LearnerTrajectoryPanel trajectory={trajectory} isCurrent={trajectoryCurrent} />
+
       <NextSessionBriefPanel
         key={`${nextSessionBrief.scheduledFor}-${nextSessionBrief.decision.score}-${nextSessionBrief.evidenceSources.map((source) => source.attemptId).join("-")}`}
         brief={nextSessionBrief}
@@ -320,7 +404,7 @@ export function SessionEvidenceWorkspace({
 
       <article className="panel report-panel" id="parent-report-panel">
         <header className="panel-header">
-          <div><span className="panel-index">06</span><h3>Parent update</h3></div>
+          <div><span className="panel-index">07</span><h3>Parent update</h3></div>
           <span className={`status ${reportCheckCurrent ? "status-honest" : "status-watch"}`}>
             Honesty Gate {reportCheckCurrent ? "passed" : "review"}
           </span>
@@ -334,6 +418,9 @@ export function SessionEvidenceWorkspace({
             onChange={(event) => {
               setReport((current) => ({ ...current, text: event.target.value }));
               setReportCheckCurrent(false);
+              setSignOff(null);
+              setSignOffError(false);
+              setSignOffMessage("Parent wording changed. Re-run tutor sign-off before copying.");
               setCopyState("idle");
               setReportMessage("Report edited. Review the wording before sending.");
             }}
@@ -350,8 +437,8 @@ export function SessionEvidenceWorkspace({
               <span aria-hidden="true">{reportState === "loading" ? "···" : "✦"}</span>
               {reportState === "loading" ? "Checking with GPT-5.6" : "Generate parent update"}
             </button>
-            <button className="copy-button" type="button" onClick={copyReport}>
-              <span aria-hidden="true">⧉</span> Copy parent update
+            <button className="copy-button" type="button" onClick={copyReport} disabled={!signOff}>
+              <span aria-hidden="true">⧉</span> {signOff ? "Copy parent update" : "Sign off to copy"}
             </button>
             <span>{reportModel ? `Model: ${reportModel}` : "Safe synthetic sample"}</span>
           </div>
@@ -385,6 +472,47 @@ export function SessionEvidenceWorkspace({
               </ul>
             </div>
           </div>
+        </div>
+      </article>
+
+      <article className="panel signoff-panel" id="tutor-sign-off" aria-live="polite">
+        <header className="panel-header">
+          <div><span className="panel-index">08</span><h3>Tutor sign-off</h3></div>
+          <span className={`status ${signOff ? "status-ready" : "status-watch"}`}>
+            {signOff ? "Signed off" : "Review required"}
+          </span>
+        </header>
+        <div className="signoff-body">
+          <div className="signoff-scope">
+            <span className="proof-icon" aria-hidden="true">{signOff ? "✓" : "↻"}</span>
+            <div>
+              <strong>{signOff ? signOff.statement : "Human review remains the final boundary."}</strong>
+              <p>
+                Sign-off revalidates the current evidence, mastery decision, next-session sources,
+                and parent wording. Any later edit revokes it.
+              </p>
+            </div>
+          </div>
+          {signOff ? (
+            <dl className="signoff-proof">
+              <div><dt>Signer</dt><dd>{signOff.tutorLabel}</dd></div>
+              <div><dt>Signed</dt><dd>{new Date(signOff.signedAt).toLocaleString("en-GB")}</dd></div>
+              <div><dt>Evidence reviewed</dt><dd>{signOff.reviewedAttemptCount} attempts</dd></div>
+              <div><dt>Sources checked</dt><dd>{signOff.nextSessionSourceAttemptIds.length + signOff.reportSourceAttemptIds.length}</dd></div>
+            </dl>
+          ) : null}
+          <button
+            className="generate-button"
+            type="button"
+            onClick={signOffDecisionPacket}
+            disabled={Boolean(signOff) || reportState === "loading"}
+          >
+            <span aria-hidden="true">{signOff ? "✓" : "✎"}</span>
+            {signOff ? "Tutor sign-off complete" : "Review and sign off"}
+          </button>
+          <p className={`signoff-message${signOffError ? " error" : ""}`} role={signOffError ? "alert" : "status"}>
+            {signOffMessage}
+          </p>
         </div>
       </article>
     </>

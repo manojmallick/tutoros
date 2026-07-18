@@ -1,4 +1,4 @@
-export { tuesdayScenario, workflowStages } from "./tuesday-scenario";
+export { mayaPriorSessions, tuesdayScenario, workflowStages } from "./tuesday-scenario";
 export type { TuesdayScenario, WorkflowStage } from "./tuesday-scenario";
 export {
   LessonPlanRequestSchema,
@@ -60,6 +60,24 @@ export type {
   EvidenceBenchmarkReport,
   EvidenceBenchmarkResult,
 } from "./evidence-integrity-benchmark";
+export {
+  createTutorSignOff,
+  deriveLearnerTrajectory,
+  LearnerTrajectoryInputSchema,
+  LearnerTrajectoryPointSchema,
+  LearnerTrajectorySchema,
+  LearnerTrajectorySessionSchema,
+  TutorSignOffError,
+  TutorSignOffInputSchema,
+  TutorSignOffSchema,
+} from "./learner-trajectory";
+export type {
+  LearnerTrajectory,
+  LearnerTrajectorySession,
+  TutorSignOff,
+  TutorSignOffErrorCode,
+  TutorSignOffInput,
+} from "./learner-trajectory";
 export type {
   EvidenceReference,
   HonestyGateResult,

@@ -2,6 +2,8 @@ import {
   calculateMasteryDecision,
   deriveNextSessionBrief,
   honestyGateCheck,
+  deriveLearnerTrajectory,
+  mayaPriorSessions,
   runEvidenceIntegrityBenchmark,
   tuesdayScenario,
   workflowStages,
@@ -27,6 +29,14 @@ export default function Home() {
     mastery,
   });
   const benchmark = runEvidenceIntegrityBenchmark();
+  const trajectory = deriveLearnerTrajectory([
+    ...mayaPriorSessions,
+    {
+      sessionId: "session-3",
+      label: "Tuesday · Transfer check",
+      evidence: scenario.evidence,
+    },
+  ]);
 
   if (!honestyCheck.passed) {
     throw new Error(`Synthetic parent report failed the Honesty Gate: ${honestyCheck.reason}`);
@@ -146,13 +156,15 @@ export default function Home() {
           initialReport={scenario.parentReport}
           initialHonestyCheck={honestyCheck}
           initialNextSessionBrief={nextSessionBrief}
+          initialTrajectory={trajectory}
+          priorTrajectorySessions={mayaPriorSessions}
         />
       </section>
 
       <footer>
         <a className="brand footer-brand" href="#top"><span className="brand-mark" aria-hidden="true">T</span><span>TutorOS</span></a>
         <p>A runnable foundation for tutoring that follows the evidence.</p>
-        <span>v0.7.0 · Evidence Integrity Benchmark</span>
+        <span>v0.8.0 · Three-session trajectory + tutor sign-off</span>
       </footer>
     </main>
   );
