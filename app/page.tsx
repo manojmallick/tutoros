@@ -2,10 +2,12 @@ import {
   calculateMasteryDecision,
   deriveNextSessionBrief,
   honestyGateCheck,
+  runEvidenceIntegrityBenchmark,
   tuesdayScenario,
   workflowStages,
 } from "@/src/logic";
 import { DemoWorkspace } from "@/app/components/demo-workspace";
+import { EvidenceBenchmark } from "@/app/components/evidence-benchmark";
 
 export default function Home() {
   const scenario = tuesdayScenario;
@@ -24,9 +26,16 @@ export default function Home() {
     evidence: scenario.evidence,
     mastery,
   });
+  const benchmark = runEvidenceIntegrityBenchmark();
 
   if (!honestyCheck.passed) {
     throw new Error(`Synthetic parent report failed the Honesty Gate: ${honestyCheck.reason}`);
+  }
+
+  if (!benchmark.passed) {
+    throw new Error(
+      `Evidence Integrity Benchmark failed: ${benchmark.passedCount}/${benchmark.totalCount} passed.`,
+    );
   }
 
   return (
@@ -52,7 +61,7 @@ export default function Home() {
           </p>
           <div className="hero-actions">
             <a className="button button-primary" href="#demo-path">Start 90-second demo</a>
-            <a className="text-link" href="#how-it-works">See the evidence chain <span>→</span></a>
+            <a className="text-link" href="#benchmark">See the 12/12 benchmark <span>→</span></a>
           </div>
           <div className="trust-row" aria-label="Product principles">
             <span>No login</span>
@@ -105,6 +114,8 @@ export default function Home() {
         </ol>
       </section>
 
+      <EvidenceBenchmark report={benchmark} />
+
       <section className="workspace-section" id="workspace" aria-labelledby="workspace-heading">
         <div className="workspace-heading">
           <div>
@@ -141,7 +152,7 @@ export default function Home() {
       <footer>
         <a className="brand footer-brand" href="#top"><span className="brand-mark" aria-hidden="true">T</span><span>TutorOS</span></a>
         <p>A runnable foundation for tutoring that follows the evidence.</p>
-        <span>v0.6.0 · Closed-loop next-session brief</span>
+        <span>v0.7.0 · Evidence Integrity Benchmark</span>
       </footer>
     </main>
   );

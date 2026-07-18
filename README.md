@@ -1,8 +1,8 @@
 # TutorOS
 
 TutorOS turns what actually happened in a tutoring session into the next teaching decision,
-the next lesson brief, and an evidence-grounded parent update. Version 0.6.0 closes the loop from
-session evidence to a judge-ready, no-login next-session plan with a guided 90-second path.
+the next lesson brief, and an evidence-grounded parent update. Version 0.7.0 adds a reproducible
+12-case Evidence Integrity Benchmark to the judge-ready, no-login workflow.
 
 ## Evidence chain
 
@@ -19,16 +19,18 @@ foundation build.
 ## 90-second judge walkthrough
 
 1. Read Maya’s parent update in the first viewport and note the visible Honesty Gate proof.
-2. Select **Start 90-second demo**, then inspect the preloaded 45-minute lesson plan.
-3. In **Session evidence**, change Attempt 4 from Incorrect to Correct and select **Update mastery
+2. Open **See the 12/12 benchmark** and inspect the named mastery, report-integrity, and provenance
+   checks. The score is calculated from production logic and can be reproduced with `pnpm benchmark`.
+3. Select **Start 90-second demo**, then inspect the preloaded 45-minute lesson plan.
+4. In **Session evidence**, change Attempt 4 from Incorrect to Correct and select **Update mastery
    decision**. The evidence score becomes 85%, the status becomes Secure, and review moves from
    2026-07-17 to 2026-07-28.
-4. Open **Next session** to see the brief change from model-prompt-independent remediation to
+5. Open **Next session** to see the brief change from model-prompt-independent remediation to
    independent retrieval, transfer, and stretch. Its review target and breakthrough remain linked
    to the exact attempt observations; **Generate next lesson with GPT-5.6** is optional.
-5. Follow **Copy update** to the final artifact. The existing safe sample remains available without
+6. Follow **Copy update** to the final artifact. The existing safe sample remains available without
    credentials; **Generate parent update** is another optional live GPT-5.6 action.
-6. Select **Reset demo** to restore Maya’s original plan, four attempts, 60% mastery decision,
+7. Select **Reset demo** to restore Maya’s original plan, four attempts, 60% mastery decision,
    three-day next-session brief, report text, and passed Honesty Gate.
 
 The spark-marked generation actions require `OPENAI_API_KEY`. All other steps—including editing
@@ -73,15 +75,22 @@ independent breakthrough as provenance, and differentiates the support sequence 
 reinforcement, Developing, and Secure decisions. Its optional GPT-5.6 action reuses the validated
 lesson-plan endpoint; an API failure never replaces the credential-free brief.
 
+The Evidence Integrity Benchmark runs 12 named synthetic adversarial fixtures through those same
+production functions: four mastery-scheduling checks, four Honesty Gate checks, and four
+closed-loop provenance checks. It records expected and observed behavior for every case, derives
+its category totals from the results, and fails the benchmark command if any regression appears.
+It is a product regression suite, not a claim that TutorOS is a validated learning-science model.
+
 ## Verify
 
-The current suite contains 49 passing tests, including mastery boundaries and rollover,
-next-session differentiation and provenance, Honesty Gate regressions, both API routes, and
-deployment URL normalization.
+The current suite contains 51 passing tests, including the 12/12 benchmark contract, mastery
+boundaries and rollover, next-session differentiation and provenance, Honesty Gate regressions,
+both API routes, and deployment URL normalization.
 
 ```bash
 pnpm typecheck
 pnpm lint
+pnpm benchmark
 pnpm test
 pnpm build
 ```
@@ -90,7 +99,7 @@ pnpm build
 
 - `app/` — Next.js page, layout, global styles, and metadata routes.
 - `app/api/lesson-plan/` and `app/api/parent-report/` — validated server-only GPT-5.6 endpoints.
-- `src/logic/` — TutorOS domain model, next-session decision engine, synthetic scenario, and tests.
+- `src/logic/` — TutorOS domain model, next-session engine, benchmark runner, fixtures, and tests.
 - `lib/seo/` — shared metadata and structured-data helpers.
 - `TUTOROS_EDUCATION_PLAN.md` — hackathon product and delivery plan.
 
