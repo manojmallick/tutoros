@@ -1,8 +1,8 @@
 # TutorOS
 
 TutorOS turns what actually happened in a tutoring session into the next teaching decision
-and an evidence-grounded parent update. Version 0.4.0 links the editable session evidence and
-deterministic mastery decision to a GPT-5.6 parent-report workflow with a named Honesty Gate.
+and an evidence-grounded parent update. Version 0.5.0 packages the full evidence chain as a
+judge-ready, no-login synthetic demo with an artifact-first landing and guided 90-second path.
 
 ## Evidence chain
 
@@ -13,6 +13,22 @@ deterministic mastery decision to a GPT-5.6 parent-report workflow with a named 
 
 The public demo uses synthetic student data. Do not enter real student or minor data into this
 foundation build.
+
+## 90-second judge walkthrough
+
+1. Read Maya’s parent update in the first viewport and note the visible Honesty Gate proof.
+2. Select **Start 90-second demo**, then inspect the preloaded 45-minute lesson plan.
+3. In **Session evidence**, change Attempt 4 from Incorrect to Correct and select **Update mastery
+   decision**. The evidence score becomes 85%, the status becomes Secure, and review moves from
+   2026-07-17 to 2026-07-28.
+4. Follow **Copy update** to the final artifact. The existing safe sample remains available without
+   credentials; **Generate parent update** is an optional live GPT-5.6 action.
+5. Select **Reset demo** to restore Maya’s original plan, four attempts, 60% mastery decision,
+   three-day review, report text, and passed Honesty Gate.
+
+The spark-marked generation actions require `OPENAI_API_KEY`. All other steps—including editing
+evidence, deterministic mastery scheduling, reviewing source traces, copying the report, and
+resetting the walkthrough—work without credentials.
 
 ## Develop
 
@@ -47,6 +63,9 @@ validated learning-science model.
 
 ## Verify
 
+The current suite contains 43 passing tests, including mastery boundaries and rollover,
+Honesty Gate regressions, both API routes, and deployment URL normalization.
+
 ```bash
 pnpm typecheck
 pnpm lint
@@ -65,4 +84,6 @@ pnpm build
 ## Deploy
 
 Push to a Vercel-linked Git repository or run `vercel deploy`. Set
-`NEXT_PUBLIC_SITE_URL` to the deployed canonical URL.
+`NEXT_PUBLIC_SITE_URL` to the deployed canonical URL and `OPENAI_API_KEY` to enable the two live
+GPT-5.6 generation actions. Without a configured canonical URL, metadata truthfully falls back to
+`http://localhost:3000` rather than publishing an example domain.

@@ -121,7 +121,7 @@ export function LessonPlanWorkspace({
 
   return (
     <>
-      <article className="panel context-panel">
+      <article className="panel context-panel" id="session-context">
         <header className="panel-header">
           <div><span className="panel-index">01</span><h3>Session context</h3></div>
           <span className="status status-neutral">Editable input</span>
@@ -161,13 +161,14 @@ export function LessonPlanWorkspace({
             <span aria-hidden="true">{generationState === "loading" ? "···" : "✦"}</span>
             {generationState === "loading" ? "Generating with GPT-5.6" : "Generate with GPT-5.6"}
           </button>
+          <span className="live-action-note">Optional live GPT-5.6 action · requires a server API key</span>
           <p className={`generation-message ${generationState}`} aria-live="polite">
             {message}
           </p>
         </form>
       </article>
 
-      <article className="panel plan-panel">
+      <article className="panel plan-panel" id="lesson-plan">
         <header className="panel-header">
           <div><span className="panel-index">02</span><h3>Lesson plan</h3></div>
           <span className={`status ${model ? "status-ready" : "status-neutral"}`}>

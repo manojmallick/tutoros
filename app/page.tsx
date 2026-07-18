@@ -4,8 +4,7 @@ import {
   tuesdayScenario,
   workflowStages,
 } from "@/src/logic";
-import { LessonPlanWorkspace } from "@/app/components/lesson-plan-workspace";
-import { SessionEvidenceWorkspace } from "@/app/components/session-evidence-workspace";
+import { DemoWorkspace } from "@/app/components/demo-workspace";
 
 export default function Home() {
   const scenario = tuesdayScenario;
@@ -31,7 +30,7 @@ export default function Home() {
         </a>
         <div className="nav-actions">
           <span className="demo-chip"><span aria-hidden="true" /> Synthetic demo</span>
-          <a className="nav-link" href="#workspace">Open workspace</a>
+          <a className="nav-link" href="#demo-path">Start 90-second demo</a>
         </div>
       </nav>
 
@@ -44,7 +43,7 @@ export default function Home() {
             decision, and a parent update that actually says something.
           </p>
           <div className="hero-actions">
-            <a className="button button-primary" href="#workspace">Explore Maya&apos;s Tuesday</a>
+            <a className="button button-primary" href="#demo-path">Start 90-second demo</a>
             <a className="text-link" href="#how-it-works">See the evidence chain <span>→</span></a>
           </div>
           <div className="trust-row" aria-label="Product principles">
@@ -54,10 +53,10 @@ export default function Home() {
           </div>
         </div>
 
-        <aside className="brief-card" aria-label="Next session brief">
+        <aside className="brief-card artifact-card" aria-label="Evidence-grounded parent update">
           <div className="brief-topline">
-            <span>Next session brief</span>
-            <span className="live-dot">Ready</span>
+            <span>The final artifact</span>
+            <span className="live-dot">Honesty Gate passed</span>
           </div>
           <div className="student-row">
             <span className="avatar">{scenario.student.initials}</span>
@@ -66,15 +65,15 @@ export default function Home() {
               <span>{scenario.student.level} · {scenario.student.subject}</span>
             </div>
           </div>
-          <div className="focus-block">
-            <span className="mini-label">Focus</span>
-            <strong>{scenario.session.currentFocus}</strong>
-            <p>{scenario.session.currentStruggle}</p>
+          <blockquote>{scenario.parentReport.text}</blockquote>
+          <div className="artifact-proof">
+            <span aria-hidden="true">✓</span>
+            <p>Cites Attempt 3&apos;s breakthrough and Attempt 4&apos;s recorded difficulty.</p>
           </div>
           <div className="brief-footer">
-            <div><span>Session</span><strong>{scenario.session.durationMinutes} min</strong></div>
+            <div><span>Mastery</span><strong>{mastery.score}%</strong></div>
             <div><span>Review</span><strong>In {mastery.intervalDays} days</strong></div>
-            <div><span>Evidence</span><strong>{scenario.evidence.attempts.length} attempts</strong></div>
+            <div><span>Sources</span><strong>{scenario.parentReport.referencedAttemptIds.length} attempts</strong></div>
           </div>
         </aside>
       </section>
@@ -110,34 +109,29 @@ export default function Home() {
           <span className="synthetic-notice">Synthetic student data</span>
         </div>
 
-        <div className="workspace-grid">
-          <LessonPlanWorkspace
-            initialContext={{
-              subject: scenario.student.subject,
-              studentLevel: scenario.student.level,
-              lastSessionTopic: scenario.session.lastTopic,
-              sessionGoal: scenario.session.currentFocus,
-              strugglingWith: scenario.session.currentStruggle,
-            }}
-            initialPlan={scenario.lessonPlan}
-          />
-
-          <SessionEvidenceWorkspace
-            studentName={scenario.student.name}
-            subject={scenario.student.subject}
-            nextFocus={scenario.session.currentFocus}
-            initialEvidence={scenario.evidence}
-            initialDecision={mastery}
-            initialReport={scenario.parentReport}
-            initialHonestyCheck={honestyCheck}
-          />
-        </div>
+        <DemoWorkspace
+          studentName={scenario.student.name}
+          subject={scenario.student.subject}
+          nextFocus={scenario.session.currentFocus}
+          initialContext={{
+            subject: scenario.student.subject,
+            studentLevel: scenario.student.level,
+            lastSessionTopic: scenario.session.lastTopic,
+            sessionGoal: scenario.session.currentFocus,
+            strugglingWith: scenario.session.currentStruggle,
+          }}
+          initialPlan={scenario.lessonPlan}
+          initialEvidence={scenario.evidence}
+          initialDecision={mastery}
+          initialReport={scenario.parentReport}
+          initialHonestyCheck={honestyCheck}
+        />
       </section>
 
       <footer>
         <a className="brand footer-brand" href="#top"><span className="brand-mark" aria-hidden="true">T</span><span>TutorOS</span></a>
         <p>A runnable foundation for tutoring that follows the evidence.</p>
-        <span>v0.4.0 · Evidence-grounded parent reports</span>
+        <span>v0.5.0 · Judge-ready synthetic demo</span>
       </footer>
     </main>
   );
