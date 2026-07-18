@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy and data handling — TutorOS",
-  description: "How the public TutorOS deployment candidate handles synthetic demo data and optional AI generation.",
+  description: "How the public TutorOS demo handles synthetic data and optional AI generation.",
 };
 
 export default function PrivacyPage() {
@@ -18,7 +18,7 @@ export default function PrivacyPage() {
       </nav>
 
       <article className="policy-article">
-        <p className="eyebrow">Deployment candidate · public demo</p>
+        <p className="eyebrow">TutorOS 1.0 · public demo</p>
         <h1>Privacy and data handling</h1>
         <p className="policy-intro">
           TutorOS is presented with synthetic learner data so the complete evidence workflow can
@@ -30,7 +30,7 @@ export default function PrivacyPage() {
           <p>
             The preloaded Maya scenario is fictional. Do not enter names, contact details,
             school records, health information, or any other personal data about a real student
-            or minor into this public deployment candidate.
+            or minor into this public demo.
           </p>
         </section>
 
@@ -64,8 +64,9 @@ export default function PrivacyPage() {
         <div className="policy-callout">
           <strong>Deployment status</strong>
           <p>
-            v0.9.0 is a deployment candidate. Operators should configure the canonical HTTPS URL,
-            verify <code>/api/health</code>, and review this notice before publishing.
+            v1.0.0 is publicly deployed for review. Operators should verify
+            <code>/api/health</code>, the credential-free workflow, and this notice before using
+            the URL in a final submission.
           </p>
         </div>
       </article>

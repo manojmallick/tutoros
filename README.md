@@ -1,9 +1,9 @@
 # TutorOS
 
 TutorOS turns what actually happened in a tutoring session into the next teaching decision,
-the next lesson brief, and an evidence-grounded parent update. Version 0.9.0 is the deployment
-candidate: operational health, security headers, privacy guidance, and production preflight now
-surround the judge-ready, no-login workflow.
+the next lesson brief, and an evidence-grounded parent update. Version 1.0.0 packages the
+judge-ready, no-login workflow with measured integrity, operational health, privacy guidance,
+submission copy, and an artifact-first demo script.
 
 ## Evidence chain
 
@@ -96,10 +96,16 @@ closed-loop provenance checks. It records expected and observed behavior for eve
 its category totals from the results, and fails the benchmark command if any regression appears.
 It is a product regression suite, not a claim that TutorOS is a validated learning-science model.
 
-The deployment candidate adds a no-store health contract, a strict canonical-URL preflight,
+The submission release includes a no-store health contract, a strict canonical-URL preflight,
 browser security headers, generation-request size limits, graceful fallback pages, and an explicit
 privacy notice. The app remains useful without `OPENAI_API_KEY`; that credential enables only the
 three optional spark-marked generation actions.
+
+The release evidence is deliberately inspectable: [SUBMISSION.md](SUBMISSION.md) contains the
+paste-ready project story and measured Codex/GPT-5.6 coverage, [CHALLENGES.md](CHALLENGES.md)
+records four exact build problems and fixes, [DEMO_SCRIPT.md](DEMO_SCRIPT.md) keeps the recording
+under three minutes, and [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) separates verified work from
+human submission actions. The repository is provided under the [MIT License](LICENSE).
 
 ## Verify
 
@@ -134,8 +140,16 @@ It reports `OPENAI_API_KEY` as an optional capability and never prints its value
 - `lib/deployment/` — production readiness and browser security contracts.
 - `lib/seo/` — shared metadata and structured-data helpers.
 - `TUTOROS_EDUCATION_PLAN.md` — hackathon product and delivery plan.
+- `SUBMISSION.md` — paste-ready Education entry, measured coverage, and live links.
+- `CHALLENGES.md` — real engineering challenge diary with exact fixes.
+- `DEMO_SCRIPT.md` — artifact-first 2:45 recording script.
+- `RELEASE_CHECKLIST.md` — verified release proof and remaining human actions.
 
 ## Deploy to Vercel
+
+Current public deployment: [https://tutoros-sand.vercel.app](https://tutoros-sand.vercel.app).
+Vercel reports the deployment as Ready; complete the human smoke checklist in
+`RELEASE_CHECKLIST.md` before submitting it as the final judge URL.
 
 1. Import this repository into Vercel as a Next.js project.
 2. Set `NEXT_PUBLIC_SITE_URL` to the final public HTTPS URL for Production and Preview as
@@ -153,9 +167,9 @@ curl -i https://your-final-domain.example/api/health
 curl -I https://your-final-domain.example/
 ```
 
-The health response should be `200`, show version `0.9.0`, report the real `12/12` Evidence
+The health response should be `200`, show version `1.0.0`, report the real `12/12` Evidence
 Integrity Benchmark, and describe live generation only as `configured` or
 `optional_not_configured`. Confirm `/privacy`, `/manifest.webmanifest`, an unknown route, the
 credential-free judge path, tutor sign-off, and mobile layout. Generation endpoints should return
-an actionable `503` when the optional key is absent. No live deployment URL is claimed here until
-one has actually been created and smoke-tested.
+an actionable `503` when the optional key is absent. The release documents claim only URLs that
+were actually created; production promotion remains an explicit post-merge action.
