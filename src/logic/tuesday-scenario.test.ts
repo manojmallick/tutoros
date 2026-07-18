@@ -14,6 +14,7 @@ describe("Tuesday tutoring scenario", () => {
       "mastery",
       "next",
       "report",
+      "signoff",
     ]);
   });
 

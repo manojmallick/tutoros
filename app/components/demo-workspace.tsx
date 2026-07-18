@@ -7,6 +7,8 @@ import type {
   HonestyGateResult,
   LessonPlan,
   LessonPlanRequest,
+  LearnerTrajectory,
+  LearnerTrajectorySession,
   MasteryDecision,
   NextSessionBrief,
   ParentReportDraft,
@@ -25,14 +27,17 @@ type DemoWorkspaceProps = {
   initialReport: ParentReportDraft;
   initialHonestyCheck: HonestyGateResult;
   initialNextSessionBrief: NextSessionBrief;
+  initialTrajectory: LearnerTrajectory;
+  priorTrajectorySessions: LearnerTrajectorySession[];
 };
 
 const demoSteps = [
   { href: "#lesson-plan", number: "1", label: "Inspect plan" },
   { href: "#session-evidence", number: "2", label: "Edit evidence" },
-  { href: "#mastery-decision", number: "3", label: "See decision" },
+  { href: "#learner-trajectory", number: "3", label: "See trajectory" },
   { href: "#next-session-brief", number: "4", label: "Open next" },
-  { href: "#parent-report-panel", number: "5", label: "Copy update" },
+  { href: "#parent-report-panel", number: "5", label: "Review update" },
+  { href: "#tutor-sign-off", number: "6", label: "Sign off" },
 ];
 
 export function DemoWorkspace(props: DemoWorkspaceProps) {
@@ -86,6 +91,8 @@ export function DemoWorkspace(props: DemoWorkspaceProps) {
           initialReport={props.initialReport}
           initialHonestyCheck={props.initialHonestyCheck}
           initialNextSessionBrief={props.initialNextSessionBrief}
+          initialTrajectory={props.initialTrajectory}
+          priorTrajectorySessions={props.priorTrajectorySessions}
         />
       </div>
     </>

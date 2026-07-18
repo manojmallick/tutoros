@@ -84,7 +84,7 @@ export function NextSessionBriefPanel({ brief, isCurrent }: NextSessionBriefPane
   return (
     <article className="panel next-session-panel" id="next-session-brief">
       <header className="panel-header">
-        <div><span className="panel-index">05</span><h3>Next session brief</h3></div>
+        <div><span className="panel-index">06</span><h3>Next session brief</h3></div>
         <span className={`status ${isCurrent ? "status-ready" : "status-watch"}`}>
           {isCurrent ? "Closed loop" : "Refresh needed"}
         </span>

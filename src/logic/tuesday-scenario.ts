@@ -1,6 +1,7 @@
 import type { LessonPlan } from "./lesson-plan";
 import type { SessionEvidence } from "./mastery";
 import type { ParentReportDraft } from "./parent-report";
+import type { LearnerTrajectorySession } from "./learner-trajectory";
 
 export type WorkflowStage = {
   id: string;
@@ -58,6 +59,12 @@ export const workflowStages: WorkflowStage[] = [
     number: "05",
     title: "Update the parent",
     description: "Create a warm, honest update grounded in the session—not generic praise.",
+  },
+  {
+    id: "signoff",
+    number: "06",
+    title: "Tutor signs off",
+    description: "Require a human review of the evidence, next step, and parent wording before use.",
   },
 ];
 
@@ -161,3 +168,61 @@ export const tuesdayScenario: TuesdayScenario = {
     referencedAttemptIds: ["practice-3", "practice-4"],
   },
 };
+
+export const mayaPriorSessions: LearnerTrajectorySession[] = [
+  {
+    sessionId: "session-1",
+    label: "Session 1 · Build the model",
+    evidence: {
+      topic: "Equivalent fractions",
+      reviewedOn: "2026-06-30",
+      attempts: [
+        {
+          id: "session-1-model",
+          prompt: "Use fraction bars to match one half and two fourths.",
+          outcome: "correct",
+          support: "modeled",
+          observation: "Matched the fractions after the tutor modeled the first comparison.",
+        },
+        {
+          id: "session-1-retrieve",
+          prompt: "Find another fraction equivalent to one third.",
+          outcome: "partial",
+          support: "modeled",
+          observation: "Needed the fraction wall to identify two sixths and explain the match.",
+        },
+      ],
+    },
+  },
+  {
+    sessionId: "session-2",
+    label: "Session 2 · Fade the prompt",
+    evidence: {
+      topic: "Common denominators",
+      reviewedOn: "2026-07-07",
+      attempts: [
+        {
+          id: "session-2-model",
+          prompt: "Rename one third and one sixth using a common denominator.",
+          outcome: "correct",
+          support: "modeled",
+          observation: "Renamed both fractions accurately after one worked example.",
+        },
+        {
+          id: "session-2-prompt",
+          prompt: "Choose a common denominator for one fourth and one sixth.",
+          outcome: "correct",
+          support: "prompted",
+          observation: "Selected 12 after a prompt to list shared multiples.",
+        },
+        {
+          id: "session-2-independent",
+          prompt: "Explain why denominators must match before adding fractions.",
+          outcome: "partial",
+          support: "independent",
+          observation: "Explained that the pieces need equal size but did not connect this to renaming both fractions.",
+        },
+      ],
+    },
+  },
+];

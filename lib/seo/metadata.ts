@@ -3,14 +3,14 @@ import { resolveSiteUrl } from "./site-url";
 
 export function baseMetadata(): Metadata {
   return {
-    title: "TutorOS — Measured evidence from lesson plan to parent update",
+    title: "TutorOS — Learner trajectory with tutor sign-off",
     description:
-      "Explore a no-login synthetic tutoring session with a reproducible 12-case Evidence Integrity Benchmark.",
+      "Explore three evidence-grounded tutoring sessions, a reproducible integrity benchmark, and explicit tutor sign-off.",
     metadataBase: new URL(resolveSiteUrl()),
     openGraph: {
-      title: "TutorOS — 12/12 Evidence Integrity Benchmark",
+      title: "TutorOS — Three-session trajectory with human sign-off",
       description:
-        "A judge-ready synthetic tutoring session with measured mastery, report-integrity, and evidence-provenance checks.",
+        "A judge-ready synthetic tutoring workflow with measured learner trajectory, evidence provenance, and tutor review.",
       type: "website",
     },
     twitter: {

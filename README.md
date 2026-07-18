@@ -1,8 +1,8 @@
 # TutorOS
 
 TutorOS turns what actually happened in a tutoring session into the next teaching decision,
-the next lesson brief, and an evidence-grounded parent update. Version 0.7.0 adds a reproducible
-12-case Evidence Integrity Benchmark to the judge-ready, no-login workflow.
+the next lesson brief, and an evidence-grounded parent update. Version 0.8.0 adds a live
+three-session learner trajectory and explicit tutor sign-off to the judge-ready, no-login workflow.
 
 ## Evidence chain
 
@@ -12,6 +12,8 @@ the next lesson brief, and an evidence-grounded parent update. Version 0.7.0 add
 4. Turn that evidence into a mastery decision with a transparent review date.
 5. Carry the decision into a five-minute retrieval task, support progression, next focus, mastery
    check, and honest parent update.
+6. Require the tutor to review and sign off the current evidence, next step, and parent wording
+   before the update can be copied.
 
 The public demo uses synthetic student data. Do not enter real student or minor data into this
 foundation build.
@@ -22,16 +24,18 @@ foundation build.
 2. Open **See the 12/12 benchmark** and inspect the named mastery, report-integrity, and provenance
    checks. The score is calculated from production logic and can be reproduced with `pnpm benchmark`.
 3. Select **Start 90-second demo**, then inspect the preloaded 45-minute lesson plan.
-4. In **Session evidence**, change Attempt 4 from Incorrect to Correct and select **Update mastery
-   decision**. The evidence score becomes 85%, the status becomes Secure, and review moves from
-   2026-07-17 to 2026-07-28.
-5. Open **Next session** to see the brief change from model-prompt-independent remediation to
+4. Read **Three-session learner trajectory**: Maya moves from 45% to 63%, then 60% with a recent
+   independent transfer gap rather than a falsely smooth improvement story.
+5. In **Session evidence**, change Attempt 4 from Incorrect to Correct and select **Update mastery
+   decision**. The latest trajectory point becomes 85% Secure, direction becomes Ready to extend,
+   and review moves from 2026-07-17 to 2026-07-28.
+6. Open **Next session** to see the brief change from model-prompt-independent remediation to
    independent retrieval, transfer, and stretch. Its review target and breakthrough remain linked
    to the exact attempt observations; **Generate next lesson with GPT-5.6** is optional.
-6. Follow **Copy update** to the final artifact. The existing safe sample remains available without
-   credentials; **Generate parent update** is another optional live GPT-5.6 action.
-7. Select **Reset demo** to restore Maya’s original plan, four attempts, 60% mastery decision,
-   three-day next-session brief, report text, and passed Honesty Gate.
+7. Open **Tutor sign-off** and select **Review and sign off**. Only then does **Copy parent update**
+   become available; no credentials are required for this governance check.
+8. Change evidence or parent wording to see sign-off revoked, then select **Reset demo** to restore
+   Maya’s original three-session trajectory, unsigned packet, report, and Honesty Gate state.
 
 The spark-marked generation actions require `OPENAI_API_KEY`. All other steps—including editing
 evidence, deterministic mastery scheduling, reviewing source traces, copying the report, and
@@ -75,6 +79,16 @@ independent breakthrough as provenance, and differentiates the support sequence 
 reinforcement, Developing, and Secure decisions. Its optional GPT-5.6 action reuses the validated
 lesson-plan endpoint; an API failure never replaces the credential-free brief.
 
+The learner trajectory accepts exactly three chronologically ordered session records and derives
+every point through the same mastery scheduler used by the editable workspace. It reports score,
+status, review interval, independent success, and support use without averaging away the latest
+independent miss. The first two synthetic sessions remain fixed while Tuesday recomputes live.
+
+Tutor sign-off is a deterministic integrity boundary, not a decorative approval badge. It
+revalidates current evidence, recomputes the next-session brief and its exact sources, and runs the
+parent wording through the Honesty Gate. Evidence or wording edits revoke approval, and the parent
+update cannot be copied until the current packet is signed off.
+
 The Evidence Integrity Benchmark runs 12 named synthetic adversarial fixtures through those same
 production functions: four mastery-scheduling checks, four Honesty Gate checks, and four
 closed-loop provenance checks. It records expected and observed behavior for every case, derives
@@ -83,7 +97,8 @@ It is a product regression suite, not a claim that TutorOS is a validated learni
 
 ## Verify
 
-The current suite contains 51 passing tests, including the 12/12 benchmark contract, mastery
+The current suite contains 58 passing tests, including the three-session trajectory and sign-off
+boundaries, the 12/12 benchmark contract, mastery
 boundaries and rollover, next-session differentiation and provenance, Honesty Gate regressions,
 both API routes, and deployment URL normalization.
 
@@ -99,7 +114,7 @@ pnpm build
 
 - `app/` — Next.js page, layout, global styles, and metadata routes.
 - `app/api/lesson-plan/` and `app/api/parent-report/` — validated server-only GPT-5.6 endpoints.
-- `src/logic/` — TutorOS domain model, next-session engine, benchmark runner, fixtures, and tests.
+- `src/logic/` — domain model, trajectory and sign-off engines, benchmark, fixtures, and tests.
 - `lib/seo/` — shared metadata and structured-data helpers.
 - `TUTOROS_EDUCATION_PLAN.md` — hackathon product and delivery plan.
 
