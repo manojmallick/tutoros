@@ -18,10 +18,13 @@ const validContext = {
 
 const honestyCheck = honestyGateCheck(tuesdayScenario.parentReport, validContext);
 
-function post(body: string) {
+function post(body: string, contentLength?: number) {
   return new Request("http://localhost/api/parent-report", {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: {
+      "content-type": "application/json",
+      ...(contentLength ? { "content-length": String(contentLength) } : {}),
+    },
     body,
   });
 }
@@ -39,12 +42,23 @@ describe("POST /api/parent-report", () => {
     );
 
     expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toEqual({
       report: tuesdayScenario.parentReport,
       model: "gpt-5.6-sol",
       honestyCheck,
     });
     expect(generate).toHaveBeenCalledWith(validContext);
+  });
+
+  it("rejects declared request bodies above 32 KB without reading them", async () => {
+    const generate = vi.fn<ParentReportGenerator>();
+    const response = await createParentReportHandler({ generate })(post("{}", 32 * 1024 + 1));
+
+    expect(response.status).toBe(413);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect((await response.json()).error.code).toBe("request_too_large");
+    expect(generate).not.toHaveBeenCalled();
   });
 
   it("recomputes stale mastery from the submitted evidence", async () => {

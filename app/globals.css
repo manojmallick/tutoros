@@ -367,6 +367,23 @@ p, h1, h2, h3, blockquote, dl, dd { margin: 0; }
 
 footer { min-height: 150px; padding: 45px max(24px, calc((100vw - 1180px) / 2)); background: var(--surface); display: flex; align-items: center; justify-content: space-between; gap: 24px; border-top: 1px solid var(--line); }
 footer p, footer > span { color: var(--muted); font-size: 11px; }
+.footer-links { display: flex; gap: 15px; color: var(--green); font-size: 10px; font-weight: 700; }
+.footer-links a { border-bottom: 1px solid transparent; }
+.footer-links a:hover { border-color: currentColor; }
+.policy-page { min-height: 100vh; background: var(--paper); }
+.policy-article { width: min(780px, calc(100% - 48px)); margin: 0 auto; padding: 88px 0 110px; }
+.policy-article h1, .fallback-page h1 { margin-top: 16px; font-family: "Newsreader", Georgia, serif; font-size: clamp(46px, 6vw, 72px); line-height: 1; font-weight: 500; letter-spacing: -.04em; }
+.policy-intro { margin-top: 24px; color: var(--muted); font-size: 17px; line-height: 1.65; }
+.policy-article section { display: grid; gap: 10px; margin-top: 34px; padding-top: 28px; border-top: 1px solid var(--line); }
+.policy-article section h2 { margin: 0; font-size: 17px; }
+.policy-article section p, .policy-callout p { color: var(--muted); font-size: 13px; line-height: 1.75; }
+.policy-callout { display: grid; gap: 8px; margin-top: 38px; padding: 20px; border-radius: 10px; background: var(--ink); color: white; }
+.policy-callout p { color: #b8c8c4; }
+.policy-callout code { color: var(--lime); }
+.fallback-page { width: min(720px, calc(100% - 48px)); min-height: 100vh; margin: 0 auto; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 20px; padding: 70px 0; }
+.fallback-page > p:not(.eyebrow) { max-width: 580px; color: var(--muted); line-height: 1.65; }
+.fallback-page .button { margin-top: 8px; }
+.fallback-button { border: 0; font-family: inherit; cursor: pointer; }
 
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; gap: 60px; padding-top: 70px; }
@@ -418,6 +435,8 @@ footer p, footer > span { color: var(--muted); font-size: 11px; }
   .honesty-gate li { grid-template-columns: 1fr; gap: 3px; }
   .signoff-proof { grid-template-columns: 1fr 1fr; }
   footer { align-items: flex-start; flex-direction: column; }
+  .policy-article { width: min(100% - 32px, 780px); padding-top: 64px; }
+  .fallback-page { width: min(100% - 32px, 720px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
