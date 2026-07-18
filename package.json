@@ -1,0 +1,37 @@
+{
+  "name": "tutoros",
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.33.2",
+  "private": true,
+  "description": "Evidence-grounded lesson planning and parent updates for independent tutors.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "postinstall": "sigmap",
+    "map:refresh": "sigmap",
+    "map:report": "sigmap --report --json",
+    "map:watch": "sigmap daemon start",
+    "map:setup": "sigmap --setup"
+  },
+  "dependencies": {
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vercel/config": "^0.5.5",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.2.10",
+    "sigmap": "^8.18.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.7"
+  }
+}
