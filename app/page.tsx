@@ -1,4 +1,5 @@
 import { tuesdayScenario, workflowStages } from "@/src/logic";
+import { LessonPlanWorkspace } from "@/app/components/lesson-plan-workspace";
 
 export default function Home() {
   const scenario = tuesdayScenario;
@@ -92,32 +93,16 @@ export default function Home() {
         </div>
 
         <div className="workspace-grid">
-          <article className="panel context-panel">
-            <header className="panel-header">
-              <div><span className="panel-index">01</span><h3>Session context</h3></div>
-              <span className="status status-neutral">Input</span>
-            </header>
-            <dl className="context-list">
-              <div><dt>Last session</dt><dd>{scenario.session.lastTopic}</dd></div>
-              <div><dt>Today&apos;s focus</dt><dd>{scenario.session.currentFocus}</dd></div>
-              <div><dt>Current struggle</dt><dd>{scenario.session.currentStruggle}</dd></div>
-            </dl>
-          </article>
-
-          <article className="panel plan-panel">
-            <header className="panel-header">
-              <div><span className="panel-index">02</span><h3>Lesson plan</h3></div>
-              <span className="status status-ready">Ready</span>
-            </header>
-            <ol className="plan-list">
-              {scenario.lessonPlan.map((item) => (
-                <li key={item.title}>
-                  <span>{item.duration}</span>
-                  <div><strong>{item.title}</strong><p>{item.detail}</p></div>
-                </li>
-              ))}
-            </ol>
-          </article>
+          <LessonPlanWorkspace
+            initialContext={{
+              subject: scenario.student.subject,
+              studentLevel: scenario.student.level,
+              lastSessionTopic: scenario.session.lastTopic,
+              sessionGoal: scenario.session.currentFocus,
+              strugglingWith: scenario.session.currentStruggle,
+            }}
+            initialPlan={scenario.lessonPlan}
+          />
 
           <article className="panel evidence-panel">
             <header className="panel-header">
@@ -172,7 +157,7 @@ export default function Home() {
       <footer>
         <a className="brand footer-brand" href="#top"><span className="brand-mark" aria-hidden="true">T</span><span>TutorOS</span></a>
         <p>A runnable foundation for tutoring that follows the evidence.</p>
-        <span>v0.1.0 · Synthetic demo</span>
+        <span>v0.2.0 · GPT-5.6 lesson planning</span>
       </footer>
     </main>
   );

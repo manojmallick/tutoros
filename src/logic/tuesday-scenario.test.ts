@@ -24,11 +24,12 @@ describe("Tuesday tutoring scenario", () => {
   });
 
   it("keeps the lesson plan within the promised session length", () => {
-    const plannedMinutes = tuesdayScenario.lessonPlan.reduce(
-      (total, item) => total + Number.parseInt(item.duration, 10),
-      0,
-    );
+    const { warmup, coreTeaching, practice, masteryCheck } = tuesdayScenario.lessonPlan;
+    const plannedMinutes =
+      warmup.minutes + coreTeaching.minutes + practice.minutes + masteryCheck.minutes;
 
     expect(plannedMinutes).toBe(tuesdayScenario.session.durationMinutes);
+    expect(plannedMinutes).toBe(tuesdayScenario.lessonPlan.totalMinutes);
+    expect(practice.problems).toHaveLength(4);
   });
 });

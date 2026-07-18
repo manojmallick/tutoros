@@ -1,8 +1,8 @@
 # TutorOS
 
 TutorOS turns what actually happened in a tutoring session into the next teaching decision
-and an evidence-grounded parent update. Version 0.1.0 is the runnable product foundation: a
-responsive, no-login walkthrough built around one clearly labeled synthetic Tuesday session.
+and an evidence-grounded parent update. Version 0.2.0 adds a GPT-5.6 lesson-plan vertical
+slice to the responsive, no-login walkthrough built around a synthetic Tuesday session.
 
 ## Evidence chain
 
@@ -24,7 +24,12 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). No OpenAI API key is required for v0.1.0.
+Open [http://localhost:3000](http://localhost:3000). The editable synthetic sample works
+without credentials. Add `OPENAI_API_KEY` to `.env.local` to generate new plans.
+
+The key is read only by `POST /api/lesson-plan` on the server and is never sent to the browser.
+The route uses the OpenAI Responses API, the `gpt-5.6` model alias, and Zod Structured Outputs
+to produce a validated 45-minute plan with four increasing-difficulty practice problems.
 
 ## Verify
 
@@ -38,6 +43,7 @@ pnpm build
 ## Project structure
 
 - `app/` — Next.js page, layout, global styles, and metadata routes.
+- `app/api/lesson-plan/` — validated server-only GPT-5.6 generation endpoint.
 - `src/logic/` — TutorOS domain model, synthetic scenario, and unit tests.
 - `lib/seo/` — shared metadata and structured-data helpers.
 - `TUTOROS_EDUCATION_PLAN.md` — hackathon product and delivery plan.
