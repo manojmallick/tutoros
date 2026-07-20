@@ -35,11 +35,12 @@ mastery, Honesty Gate, and provenance functions, and all 12 cases pass. The repo
 passing tests, deployment preflight, a secret-safe health endpoint, security headers, privacy
 guidance, and a credential-free judge path.
 
-Codex drove nine issue-to-PR iterations across the runnable foundation, GPT‑5.6 lesson-plan slice,
+Codex with `gpt-5.6-sol` drove nine issue-to-PR iterations across the runnable foundation, GPT‑5.6 lesson-plan slice,
 session evidence, parent reporting, judge flow, closed-loop next session, integrity benchmark,
 learner trajectory and tutor sign-off, and deployment hardening. GPT‑5.6 powers three optional
-generation actions through two validated server-only endpoints. The core proof works without an API
-key.
+generation actions through two validated server-only endpoints when a server API key is configured.
+The public credential-free path uses visibly labeled local fixtures; they are not model output. The
+core proof works without an API key.
 
 ## Category
 
@@ -59,6 +60,19 @@ Education
 - Vercel deployment: https://tutoros-sand.vercel.app
 - Demo video: **HUMAN ACTION REQUIRED — add the public YouTube URL**
 - Repository: https://github.com/manojmallick/tutoros
+- Public judge path: https://tutoros-sand.vercel.app
+- Devpost project: https://devpost.com/software/tutoros
+
+## Devpost submission fields
+
+| Field | Answer |
+|---|---|
+| Submitter Type | **HUMAN ACTION REQUIRED — Individual, Team of Individuals, or Organization** |
+| Country of Residence | **HUMAN ACTION REQUIRED** |
+| Category | Education |
+| Repository | https://github.com/manojmallick/tutoros |
+| Judge test link | https://tutoros-sand.vercel.app — no account, credential, or rebuild required; select **Start 90-second demo** |
+| `/feedback` Session ID | `019f74c8-b8f0-7be3-bb77-d619e28f77cb` |
 
 ## Codex and GPT‑5.6 coverage — measured
 
@@ -76,7 +90,7 @@ Education
 
 ## Values that must not be fabricated
 
-- `/feedback` Codex Session ID: **HUMAN ACTION REQUIRED**
+- `/feedback` Codex Session ID: `019f74c8-b8f0-7be3-bb77-d619e28f77cb`
 - Public YouTube demo URL: **HUMAN ACTION REQUIRED**
-- Devpost project URL and final submission confirmation: **HUMAN ACTION REQUIRED**
+- Final Devpost submission confirmation: **HUMAN ACTION REQUIRED**
 - Final live-URL smoke-test confirmation: **HUMAN ACTION REQUIRED**
