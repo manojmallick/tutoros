@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   LessonPlanGenerationError,
   type LessonPlanGenerator,
@@ -26,10 +26,24 @@ function post(body: string, contentLength?: number) {
 }
 
 describe("POST /api/lesson-plan", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("returns an explicitly labeled mock response when the API key is absent", async () => {
+    vi.stubEnv("OPENAI_API_KEY", "");
+    const response = await createLessonPlanHandler()(post(JSON.stringify(validContext)));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.source).toBe("mock");
+    expect(body.model).toBe("gpt-5.6");
+    expect(body.plan.totalMinutes).toBe(45);
+  });
+
   it("returns a structured plan from the injected generator", async () => {
     const generate = vi.fn<LessonPlanGenerator>().mockResolvedValue({
       plan: tuesdayScenario.lessonPlan,
       model: "gpt-5.6-sol",
+      source: "live",
     });
     const response = await createLessonPlanHandler({ generate })(
       post(JSON.stringify(validContext)),
@@ -40,6 +54,7 @@ describe("POST /api/lesson-plan", () => {
     expect(await response.json()).toEqual({
       plan: tuesdayScenario.lessonPlan,
       model: "gpt-5.6-sol",
+      source: "live",
     });
     expect(generate).toHaveBeenCalledWith(validContext);
   });
@@ -77,7 +92,6 @@ describe("POST /api/lesson-plan", () => {
   });
 
   it.each([
-    ["missing_api_key", 503],
     ["generation_refused", 422],
     ["provider_failure", 502],
   ] as const)("maps %s to an actionable response", async (code, status) => {

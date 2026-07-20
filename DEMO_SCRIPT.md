@@ -1,4 +1,4 @@
-# TutorOS 1.0 — demo script (2:45 target)
+# TutorOS 1.1 — demo script (2:45 target)
 
 The recording must stay under three minutes. Keep the cursor deliberate and do not wait for a live
 model call; the credential-free sample proves the complete product claim.
@@ -53,10 +53,10 @@ off**, then show that **Copy parent update** becomes available.
 ## 2:18–2:32 — how Codex and GPT‑5.6 were used
 
 > “Codex carried nine issue-to-PR iterations—from the mastery override to the benchmark, trajectory,
-> sign-off, and deployment hardening. GPT‑5.6 powers three optional generation actions; the judged
-> evidence workflow works without credentials.”
+> sign-off, and deployment hardening. GPT‑5.6 powers three live generation actions when configured;
+> without credentials, the same buttons return visibly labeled local mocks.”
 
-Briefly show the 72-test result or this repository’s verification section.
+Briefly show the 74-test result or this repository’s verification section.
 
 ## 2:32–2:45 — close
 

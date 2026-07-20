@@ -1,6 +1,15 @@
 export { mayaPriorSessions, tuesdayScenario, workflowStages } from "./tuesday-scenario";
 export type { TuesdayScenario, WorkflowStage } from "./tuesday-scenario";
 export {
+  GenerationSourceSchema,
+  MOCK_GPT56_MODEL,
+} from "./generation-source";
+export type { GenerationSource } from "./generation-source";
+export {
+  createMockLessonPlan,
+  createMockParentReport,
+} from "./mock-generation";
+export {
   LessonPlanRequestSchema,
   LessonPlanSchema,
   LESSON_PLAN_MODEL,

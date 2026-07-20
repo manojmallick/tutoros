@@ -1,4 +1,4 @@
-# TutorOS 1.0 release and submission checklist
+# TutorOS 1.1 release and submission checklist
 
 Checked items are verified in the repository or automated workflow. Unchecked items require a real
 human action or an external state change.
@@ -10,13 +10,13 @@ human action or an external state change.
 - [x] Three-session trajectory recomputes only the editable Tuesday session.
 - [x] Honesty Gate and revocable tutor sign-off are visible in the judge path.
 - [x] Evidence Integrity Benchmark passes 12/12 production-logic cases.
-- [x] Test suite passes 72/72 tests.
+- [x] Test suite passes 74/74 tests.
 - [x] Deployment preflight, health contract, security headers, privacy page, and fallbacks exist.
 - [x] MIT license is present.
 - [x] README, challenge diary, submission copy, and <=3-minute demo script are prepared.
 - [x] Vercel deployment is Ready and recorded as `https://tutoros-sand.vercel.app`.
 - [ ] Public deployment smoke-tested without login and without `OPENAI_API_KEY`.
-- [ ] The 1.0.0 release PR is reviewed and merged to `main`.
+- [ ] The 1.1.0 release PR is reviewed and merged to `main`.
 - [ ] Final production deployment smoke-tested after the release PR is merged.
 
 ## Human submission actions
@@ -36,6 +36,6 @@ curl -i https://your-production-domain.example/api/health
 curl -I https://your-production-domain.example/
 ```
 
-Expected: health `200`, version `1.0.0`, benchmark `12/12`, credential-free demo `ready`, security
-headers present, `/privacy` available, unknown route returns the designed `404`, and optional
-generation returns an actionable `503` when no server key is configured.
+Expected: health `200`, version `1.1.0`, benchmark `12/12`, credential-free demo `ready`, security
+headers present, `/privacy` available, unknown route returns the designed `404`, and generation
+returns a highlighted mock response when no server key is configured.

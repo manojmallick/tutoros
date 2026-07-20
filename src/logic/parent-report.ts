@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { MasteryDecisionSchema, SessionEvidenceSchema } from "./mastery";
+import { GenerationSourceSchema } from "./generation-source";
 
 const boundedText = (label: string, max: number) =>
   z
@@ -38,6 +39,7 @@ export const HonestyGateResultSchema = z.object({
 export const ParentReportGenerationSchema = z.object({
   report: ParentReportDraftSchema,
   model: z.string().min(1),
+  source: GenerationSourceSchema,
   honestyCheck: HonestyGateResultSchema,
 });
 

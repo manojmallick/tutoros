@@ -65,14 +65,6 @@ export function createLessonPlanHandler(
       return noStoreJson(result);
     } catch (error) {
       if (error instanceof LessonPlanGenerationError) {
-        if (error.code === "missing_api_key") {
-          return errorResponse(
-            503,
-            error.code,
-            "Add OPENAI_API_KEY to the server environment before generating a plan.",
-          );
-        }
-
         if (error.code === "generation_refused") {
           return errorResponse(
             422,

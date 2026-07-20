@@ -1,4 +1,4 @@
-# TutorOS 1.0 — OpenAI Build Week submission package
+# TutorOS 1.1 — OpenAI Build Week submission package
 
 ## One claim
 
@@ -31,7 +31,7 @@ the final attempt to correct changes only Tuesday to 85% Secure and moves review
 fourteen days.
 
 This is measured, not claimed: a 12-case Evidence Integrity Benchmark runs against the production
-mastery, Honesty Gate, and provenance functions, and all 12 cases pass. The repository has 72
+mastery, Honesty Gate, and provenance functions, and all 12 cases pass. The repository has 74
 passing tests, deployment preflight, a secret-safe health endpoint, security headers, privacy
 guidance, and a credential-free judge path.
 
@@ -52,7 +52,7 @@ Education
 - Deterministic mastery scheduler with decline and independent-miss overrides.
 - 12/12 Evidence Integrity Benchmark: 4 mastery, 4 report integrity, 4 provenance.
 - Three-session learner trajectory and revocable tutor sign-off.
-- 72/72 tests, strict production preflight, `/api/health`, CSP, no-store APIs, privacy notice.
+- 74/74 tests, strict production preflight, `/api/health`, CSP, no-store APIs, privacy notice.
 
 ## Live links
 
@@ -65,10 +65,10 @@ Education
 | Measure | Result | Reproduce |
 |---|---:|---|
 | Issue-to-PR build iterations merged before 1.0 | 9 | `git log --merges --oneline --grep='Merge pull request'` |
-| Tracked TypeScript/TSX files | 53 | `git ls-files '*.ts' '*.tsx' \| wc -l` |
-| Production TypeScript/TSX files (excluding tests and `next-env.d.ts`) | 39 | `git ls-files '*.ts' '*.tsx' \| rg -v '(\\.test\\.|next-env\\.d\\.ts)' \| wc -l` |
-| Test files | 13 | `git ls-files '*.test.ts' '*.test.tsx' \| wc -l` |
-| Passing tests | 72/72 | `pnpm test` |
+| Tracked TypeScript/TSX files | 56 | `git ls-files '*.ts' '*.tsx' \| wc -l` |
+| Production TypeScript/TSX files (excluding tests and `next-env.d.ts`) | 41 | `git ls-files '*.ts' '*.tsx' \| rg -v '(\\.test\\.|next-env\\.d\\.ts)' \| wc -l` |
+| Test files | 14 | `git ls-files '*.test.ts' '*.test.tsx' \| wc -l` |
+| Passing tests | 74/74 | `pnpm test` |
 | Evidence benchmark | 12/12 | `pnpm benchmark` |
 | Optional GPT‑5.6 calls in the complete live-generation flow | 3 | Initial plan + next-session plan + parent report |
 | Server-only generation endpoints | 2 | `/api/lesson-plan`, `/api/parent-report` |

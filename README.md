@@ -11,8 +11,9 @@
 Independent tutors leave each session with useful observations, then manually turn them into the
 next lesson, a review schedule, and a parent update. TutorOS connects those tasks: it validates an
 editable evidence log, derives deterministic mastery and next-session decisions, and optionally
-uses GPT‑5.6 for structured lesson plans and report drafts. It was built by an independent tutor for
-the real work that happens after every lesson.
+uses GPT‑5.6 for structured lesson plans and report drafts. Without an API key, those actions return
+clearly highlighted local mock fixtures with the same validated shape. It was built by an
+independent tutor for the real work that happens after every lesson.
 
 [Try the synthetic public demo](https://tutoros-sand.vercel.app)
 
@@ -68,6 +69,7 @@ flowchart LR
   subgraph AI["✦ Optional GPT‑5.6 generation"]
     M{"OPENAI_API_KEY configured?"}
     N["Responses API with Zod Structured Outputs"]
+    V["Highlighted local GPT‑5.6-shaped mock fixture"]
     O["Editable 45-minute lesson plan"]
     P["Editable parent-report draft with source IDs"]
   end
@@ -85,7 +87,8 @@ flowchart LR
 
   A --> C --> M
   M -- "Yes" --> D --> N --> O
-  M -- "No" --> O
+  M -- "No" --> V
+  V --> O
   B --> C --> E --> F
   F -- "Yes" --> G
   F -- "No" --> H
@@ -100,6 +103,7 @@ flowchart LR
   L --> T
   B --> P
   N --> P
+  V --> P
   P --> Q
   Q -- "No" --> R
   Q -- "Yes" --> S
@@ -108,9 +112,10 @@ flowchart LR
   B -. "Any edit revokes current state" .-> S
 ```
 
-The preloaded plan and report make the full evidence workflow usable without an API key. Live
-generation is an optional branch; mastery scheduling, trajectory, provenance, the Honesty Gate,
-and tutor sign-off remain deterministic.
+The preloaded plan and report make the full evidence workflow usable without an API key. Generation
+buttons return an explicitly labeled local mock when the key is absent and a live response when it
+is configured. Mastery scheduling, trajectory, provenance, the Honesty Gate, and tutor sign-off
+remain deterministic in both cases.
 
 ## How it works
 
@@ -120,9 +125,10 @@ and tutor sign-off remain deterministic.
 2. **Review or edit the lesson plan.** The sample contains a 5-minute warm-up, 20-minute core
    teaching block, 15-minute practice sequence, and 5-minute mastery check. Every teaching section
    is editable.
-3. **Optionally generate a new plan.** `POST /api/lesson-plan` validates five context fields and
-   requests a structured plan from the OpenAI Responses API. Four practice problems must progress
-   through supported, guided, independent, and stretch difficulty.
+3. **Generate a new plan.** `POST /api/lesson-plan` validates five context fields. With a key, it
+   requests a structured plan from the OpenAI Responses API. Without one, it returns a local mock
+   marked with `source: "mock"`. Four practice problems progress through supported, guided,
+   independent, and stretch difficulty.
 4. **Record evidence.** Each attempt stores an outcome (`correct`, `partial`, or `incorrect`), a
    support level (`independent`, `prompted`, or `modeled`), and an observation.
 5. **Calculate the next review.** TutorOS combines outcome and support weights. A declining
@@ -158,7 +164,8 @@ pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000). The synthetic workflow works immediately.
-Set `OPENAI_API_KEY` in `.env.local` only if you want to use the spark-marked generation actions.
+Set `OPENAI_API_KEY` in `.env.local` only if you want spark-marked actions to call OpenAI. Without
+it, those actions return highlighted local mocks and make no external model call.
 
 ### Verify the repository
 
@@ -188,7 +195,7 @@ The deployment check requires a non-local HTTPS URL. `OPENAI_API_KEY` remains op
 | Variable | Default | Purpose |
 |---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Canonical URL for metadata, robots, sitemap, health, and production-readiness checks. Production requires a non-local HTTPS URL. |
-| `OPENAI_API_KEY` | Unset | Server-only credential for both generation endpoints. The synthetic and deterministic flows do not require it. |
+| `OPENAI_API_KEY` | Unset | Server-only credential for live generation. When unset, both endpoints return highlighted local mocks with `source: "mock"`. |
 | `TUTOROS_BENCHMARK_REPORT` | Unset | Set to `1` by `pnpm benchmark` so Vitest prints the benchmark report. |
 | `TUTOROS_DEPLOYMENT_CHECK` | Unset | Set to `1` by `pnpm deployment:check` so the readiness test evaluates the current environment. |
 
@@ -198,6 +205,7 @@ The deployment check requires a non-local HTTPS URL. `OPENAI_API_KEY` remains op
 |---|---|---|
 | `LESSON_PLAN_MODEL` | `gpt-5.6` | Model requested for structured lesson-plan generation. |
 | `PARENT_REPORT_MODEL` | `gpt-5.6` | Model requested for structured parent-report generation. |
+| `MOCK_GPT56_MODEL` | `gpt-5.6` | Declares the schema target shown on local mock responses; it does not represent a model call. |
 | Lesson-plan output budget | `3,500` tokens | `max_output_tokens` passed to the Responses API for a lesson plan. |
 | Parent-report output budget | `1,200` tokens | `max_output_tokens` passed to the Responses API for a report draft. |
 | `MAX_GENERATION_REQUEST_BYTES` | `32 * 1024` bytes | Rejects declared generation requests above 32 KiB. |
@@ -207,8 +215,9 @@ The deployment check requires a non-local HTTPS URL. `OPENAI_API_KEY` remains op
 | Review intervals | `3`, `7`, or `14` days | Schedules reinforcement, developing retrieval, or secure retrieval in UTC. |
 | Evidence limits | `1–12` attempts | Bounds a validated session evidence record. |
 
-Both generation routes use low reasoning effort, no-store JSON responses, Zod validation, and
-actionable `400`, `413`, `422`, `502`, or `503` error responses where applicable.
+Live generation uses low reasoning effort. Both routes use no-store JSON responses, Zod validation,
+an explicit `live` or `mock` source, and actionable `400`, `413`, `422`, or `502` errors where
+applicable.
 
 ## Project Structure
 
@@ -232,6 +241,8 @@ tutoros/
 ├── src/logic/parent-report.ts               # Report request and structured-output schemas
 ├── src/logic/generate-lesson-plan.ts        # OpenAI lesson-plan adapter
 ├── src/logic/generate-parent-report.ts      # OpenAI report adapter
+├── src/logic/mock-generation.ts             # Schema-valid credential-free response fixtures
+├── src/logic/generation-source.ts           # Live-versus-mock response contract
 ├── src/logic/evidence-integrity-benchmark.ts # Named production-logic fixtures
 ├── src/logic/tuesday-scenario.ts            # Preloaded synthetic Maya scenario
 ├── lib/deployment/readiness.ts              # Canonical URL readiness contract
@@ -252,7 +263,10 @@ tutoros/
 - This release has no account system, database, analytics tracker, or application persistence.
   Browser edits disappear when the page reloads or the demo resets.
 - `OPENAI_API_KEY` is read only on the server. It is never exposed with a `NEXT_PUBLIC_` prefix.
-- Spark-marked generation sends the submitted tutoring context from the TutorOS server to OpenAI.
+- Without a server key, spark-marked generation runs locally and sends nothing to OpenAI. The UI
+  labels and highlights every mock response.
+- With live generation configured, spark-marked actions send the submitted tutoring context from
+  the TutorOS server to OpenAI.
 - API responses use `Cache-Control: no-store`. Generated drafts are not sent to parents
   automatically.
 - A tutor must review and sign off the current packet before the parent update can be copied.
@@ -262,8 +276,10 @@ wording.
 
 ## Honest Status
 
-TutorOS 1.0 is a runnable, public demonstration built around synthetic data. Its deterministic path
-works without credentials, while live lesson and report generation requires an OpenAI API key.
+TutorOS 1.1 is a runnable, public demonstration built around synthetic data. Its deterministic path
+works without credentials. Generation buttons fall back to local GPT‑5.6-shaped fixtures when no
+key is configured; these are simulations, not outputs produced by ChatGPT or the OpenAI API. Live
+lesson and report generation requires an OpenAI API key.
 
 The mastery scheduler is a transparent product heuristic. It is not a validated learning-science
 model, diagnostic instrument, or guarantee of student outcomes. The Evidence Integrity Benchmark

@@ -9,13 +9,14 @@ import {
   type ParentReportGeneration,
   type ParentReportRequest,
 } from "./parent-report";
+import { MOCK_GPT56_MODEL } from "./generation-source";
+import { createMockParentReport } from "./mock-generation";
 
 export type ParentReportGenerator = (
   context: ParentReportRequest,
 ) => Promise<ParentReportGeneration>;
 
 export type ParentReportGenerationErrorCode =
-  | "missing_api_key"
   | "generation_refused"
   | "honesty_gate_failed"
   | "provider_failure";
@@ -35,10 +36,19 @@ export const generateParentReport: ParentReportGenerator = async (context) => {
   const apiKey = process.env.OPENAI_API_KEY?.trim();
 
   if (!apiKey) {
-    throw new ParentReportGenerationError(
-      "missing_api_key",
-      "Parent-report generation is not configured.",
-    );
+    const report = createMockParentReport(context);
+    const honestyCheck = honestyGateCheck(report, context);
+
+    if (!honestyCheck.passed) {
+      throw new ParentReportGenerationError("honesty_gate_failed", honestyCheck.reason);
+    }
+
+    return {
+      report,
+      model: MOCK_GPT56_MODEL,
+      source: "mock",
+      honestyCheck,
+    };
   }
 
   try {
@@ -74,6 +84,7 @@ export const generateParentReport: ParentReportGenerator = async (context) => {
     return {
       report: response.output_parsed,
       model: response.model,
+      source: "live",
       honestyCheck,
     };
   } catch (error) {

@@ -43,7 +43,7 @@ const demoSteps = [
 export function DemoWorkspace(props: DemoWorkspaceProps) {
   const [resetVersion, setResetVersion] = useState(0);
   const [resetMessage, setResetMessage] = useState(
-    "Preloaded sample works without credentials. Spark buttons are optional live GPT-5.6 actions.",
+    "Preloaded sample works without credentials. Spark buttons use highlighted local GPT-5.6 mocks when no key is configured.",
   );
 
   const resetDemo = () => {

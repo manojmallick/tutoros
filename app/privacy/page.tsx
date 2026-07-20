@@ -18,7 +18,7 @@ export default function PrivacyPage() {
       </nav>
 
       <article className="policy-article">
-        <p className="eyebrow">TutorOS 1.0 · public demo</p>
+        <p className="eyebrow">TutorOS 1.1 · public demo</p>
         <h1>Privacy and data handling</h1>
         <p className="policy-intro">
           TutorOS is presented with synthetic learner data so the complete evidence workflow can
@@ -46,9 +46,10 @@ export default function PrivacyPage() {
           <h2>Optional OpenAI generation</h2>
           <p>
             The credential-free sample, mastery decisions, trajectory, benchmark, next-session
-            brief, Honesty Gate, and tutor sign-off run without a model call. If a spark-marked
-            generation action is selected, the tutoring context entered for that action is sent
-            from the TutorOS server to OpenAI to produce the requested plan or parent-report draft.
+            brief, Honesty Gate, and tutor sign-off run without a model call. Without a server API
+            key, spark-marked actions return a highlighted local mock and send nothing to OpenAI.
+            When live generation is configured, the tutoring context entered for that action is
+            sent from the TutorOS server to OpenAI to produce the requested plan or report draft.
           </p>
         </section>
 
@@ -64,7 +65,7 @@ export default function PrivacyPage() {
         <div className="policy-callout">
           <strong>Deployment status</strong>
           <p>
-            v1.0.0 is publicly deployed for review. Operators should verify
+            v1.1.0 is publicly deployed for review. Operators should verify
             <code>/api/health</code>, the credential-free workflow, and this notice before using
             the URL in a final submission.
           </p>
