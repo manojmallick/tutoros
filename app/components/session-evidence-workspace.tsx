@@ -9,6 +9,7 @@ import {
   deriveNextSessionBrief,
   deriveLearnerTrajectory,
   honestyGateCheck,
+  type GenerationSource,
   ParentReportGenerationSchema,
   SessionEvidenceSchema,
   type AttemptOutcome,
@@ -87,6 +88,7 @@ export function SessionEvidenceWorkspace({
     "A safe sample is ready. Generate again after changing the session evidence.",
   );
   const [reportModel, setReportModel] = useState<string | null>(null);
+  const [reportSource, setReportSource] = useState<GenerationSource | null>(null);
   const [copyState, setCopyState] = useState<CopyState>("idle");
   const [signOff, setSignOff] = useState<TutorSignOff | null>(null);
   const [signOffMessage, setSignOffMessage] = useState(
@@ -270,8 +272,13 @@ export function SessionEvidenceWorkspace({
       setHonestyCheck(generation.data.honestyCheck);
       setReportCheckCurrent(true);
       setReportModel(generation.data.model);
+      setReportSource(generation.data.source);
       setReportState("success");
-      setReportMessage("New report generated and cleared by the Honesty Gate. Review before sending.");
+      setReportMessage(
+        generation.data.source === "mock"
+          ? "Mock GPT-5.6 response created locally and cleared by the Honesty Gate. Review before use."
+          : "Live GPT-5.6 report generated and cleared by the Honesty Gate. Review before sending.",
+      );
     } catch (error) {
       setReportState("error");
       setReportMessage(
@@ -402,13 +409,22 @@ export function SessionEvidenceWorkspace({
         isCurrent={briefCurrent}
       />
 
-      <article className="panel report-panel" id="parent-report-panel">
+      <article
+        className={`panel report-panel${reportSource === "mock" ? " mock-response" : ""}`}
+        id="parent-report-panel"
+      >
         <header className="panel-header">
           <div><span className="panel-index">07</span><h3>Parent update</h3></div>
           <span className={`status ${reportCheckCurrent ? "status-honest" : "status-watch"}`}>
             Honesty Gate {reportCheckCurrent ? "passed" : "review"}
           </span>
         </header>
+        {reportSource === "mock" ? (
+          <div className="mock-response-banner" role="status">
+            <strong>Mock GPT-5.6 response</strong>
+            <span>Drafted locally from the current evidence. No OpenAI API call was made.</span>
+          </div>
+        ) : null}
         <div className="report-body">
           <label className="report-label" htmlFor="parent-report">Editable report</label>
           <textarea
@@ -440,9 +456,17 @@ export function SessionEvidenceWorkspace({
             <button className="copy-button" type="button" onClick={copyReport} disabled={!signOff}>
               <span aria-hidden="true">⧉</span> {signOff ? "Copy parent update" : "Sign off to copy"}
             </button>
-            <span>{reportModel ? `Model: ${reportModel}` : "Safe synthetic sample"}</span>
+            <span>
+              {reportSource === "mock"
+                ? `Schema target: ${reportModel} · mock fixture`
+                : reportModel
+                  ? `Model: ${reportModel}`
+                  : "Safe synthetic sample"}
+            </span>
           </div>
-          <span className="live-action-note">Optional live GPT-5.6 action · the preloaded report remains available without it</span>
+          <span className="live-action-note">
+            Uses a highlighted local mock without a key · uses live GPT-5.6 when configured
+          </span>
           <p className={`copy-message ${copyState}`} role="status">
             {copyState === "success"
               ? "Parent update copied."

@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import {
+  GenerationSourceSchema,
   LessonPlanSchema,
+  type GenerationSource,
   type LessonPlan,
   type NextSessionBrief,
 } from "@/src/logic";
@@ -25,6 +27,7 @@ function isApiErrorPayload(value: unknown): value is ApiErrorPayload {
 export function NextSessionBriefPanel({ brief, isCurrent }: NextSessionBriefPanelProps) {
   const [plan, setPlan] = useState<LessonPlan | null>(null);
   const [model, setModel] = useState<string | null>(null);
+  const [source, setSource] = useState<GenerationSource | null>(null);
   const [generationState, setGenerationState] = useState<GenerationState>("idle");
   const [message, setMessage] = useState(
     "The next teaching move is ready without a model call.",
@@ -69,8 +72,18 @@ export function NextSessionBriefPanel({ brief, isCurrent }: NextSessionBriefPane
           ? payload.model
           : "gpt-5.6",
       );
+      const parsedSource = GenerationSourceSchema.safeParse(
+        typeof payload === "object" && payload !== null && "source" in payload
+          ? payload.source
+          : undefined,
+      );
+      setSource(parsedSource.success ? parsedSource.data : "live");
       setGenerationState("success");
-      setMessage("Next lesson generated from the evidence-derived context. Review before teaching.");
+      setMessage(
+        parsedSource.success && parsedSource.data === "mock"
+          ? "Mock GPT-5.6 response created locally from the evidence-derived context."
+          : "Live GPT-5.6 lesson generated from the evidence-derived context. Review before teaching.",
+      );
     } catch (error) {
       setGenerationState("error");
       setMessage(
@@ -156,7 +169,7 @@ export function NextSessionBriefPanel({ brief, isCurrent }: NextSessionBriefPane
             {generationState === "loading" ? "Generating next lesson" : "Generate next lesson with GPT-5.6"}
           </button>
           <span className="live-action-note">
-            Optional live action · deterministic date, support, and provenance stay unchanged
+            Local mock without a key · live GPT-5.6 when configured · deterministic decisions stay unchanged
           </span>
           {!isCurrent ? <p className="stale-note">Update mastery before generating from edited evidence.</p> : null}
           <p className={`generation-message ${generationState}`} role={generationState === "error" ? "alert" : "status"}>
@@ -165,10 +178,14 @@ export function NextSessionBriefPanel({ brief, isCurrent }: NextSessionBriefPane
         </div>
 
         {plan && isCurrent ? (
-          <div className="next-plan-preview">
+          <div className={`next-plan-preview${source === "mock" ? " mock-response" : ""}`}>
             <div>
-              <span className="mini-label">Generated next lesson</span>
-              <strong>{model ? `Model: ${model}` : "GPT-5.6"}</strong>
+              <span className="mini-label">
+                {source === "mock" ? "Mock GPT-5.6 response" : "Generated next lesson"}
+              </span>
+              <strong>
+                {source === "mock" ? `Schema target: ${model} · no API call` : model ? `Model: ${model}` : "GPT-5.6"}
+              </strong>
             </div>
             <ol>
               <li><span>5 min</span><strong>{plan.warmup.title}</strong><p>{plan.warmup.activity}</p></li>

@@ -1,6 +1,6 @@
 {
   "name": "tutoros",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "packageManager": "pnpm@10.33.2",
   "private": true,
   "description": "Evidence-grounded lesson planning and parent updates for independent tutors.",

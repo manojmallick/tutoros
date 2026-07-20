@@ -58,7 +58,7 @@ export function validateDeploymentReadiness(
 
   if (liveGeneration === "optional_not_configured") {
     warnings.push(
-      "OPENAI_API_KEY is not configured; the credential-free demo remains ready and live generation stays disabled.",
+      "OPENAI_API_KEY is not configured; live generation stays disabled and highlighted local mock responses remain available.",
     );
   }
 

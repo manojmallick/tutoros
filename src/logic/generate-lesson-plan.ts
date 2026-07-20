@@ -8,10 +8,14 @@ import {
   type LessonPlan,
   type LessonPlanRequest,
 } from "./lesson-plan";
+import type { GenerationSource } from "./generation-source";
+import { MOCK_GPT56_MODEL } from "./generation-source";
+import { createMockLessonPlan } from "./mock-generation";
 
 export type LessonPlanGeneration = {
   plan: LessonPlan;
   model: string;
+  source: GenerationSource;
 };
 
 export type LessonPlanGenerator = (
@@ -19,7 +23,6 @@ export type LessonPlanGenerator = (
 ) => Promise<LessonPlanGeneration>;
 
 export type LessonPlanGenerationErrorCode =
-  | "missing_api_key"
   | "generation_refused"
   | "provider_failure";
 
@@ -38,10 +41,11 @@ export const generateLessonPlan: LessonPlanGenerator = async (context) => {
   const apiKey = process.env.OPENAI_API_KEY?.trim();
 
   if (!apiKey) {
-    throw new LessonPlanGenerationError(
-      "missing_api_key",
-      "Lesson-plan generation is not configured.",
-    );
+    return {
+      plan: createMockLessonPlan(context),
+      model: MOCK_GPT56_MODEL,
+      source: "mock",
+    };
   }
 
   try {
@@ -68,6 +72,7 @@ export const generateLessonPlan: LessonPlanGenerator = async (context) => {
     return {
       plan: response.output_parsed,
       model: response.model,
+      source: "live",
     };
   } catch (error) {
     if (error instanceof LessonPlanGenerationError) {

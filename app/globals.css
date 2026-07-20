@@ -163,6 +163,11 @@ p, h1, h2, h3, blockquote, dl, dd { margin: 0; }
 .status-neutral { background: #eef0ec; color: #697672; }
 .status-ready, .status-honest { background: var(--green-soft); color: var(--green); }
 .status-watch { background: var(--gold-soft); color: #9a641d; }
+.status-mock { background: #e8e1f5; color: #634493; }
+.mock-response { border-color: #a88bd4 !important; box-shadow: 0 0 0 3px rgba(99,68,147,.08), var(--shadow); }
+.mock-response-banner { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 16px; padding: 11px 13px; border: 1px solid #cbb9e6; border-radius: 8px; background: #f4f0fa; color: #634493; }
+.mock-response-banner strong { font-size: 10px; text-transform: uppercase; letter-spacing: .07em; }
+.mock-response-banner span { font-size: 9px; line-height: 1.4; text-align: right; }
 .context-form { display: grid; gap: 14px; padding-top: 18px; }
 .context-field { display: grid; gap: 6px; }
 .context-field label, .plan-section label { color: var(--muted); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }

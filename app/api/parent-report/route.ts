@@ -71,14 +71,6 @@ export function createParentReportHandler(
       return noStoreJson(result);
     } catch (error) {
       if (error instanceof ParentReportGenerationError) {
-        if (error.code === "missing_api_key") {
-          return errorResponse(
-            503,
-            error.code,
-            "Add OPENAI_API_KEY to the server environment before generating a report.",
-          );
-        }
-
         if (error.code === "generation_refused") {
           return errorResponse(
             422,

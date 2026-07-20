@@ -2,7 +2,9 @@
 
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import {
+  GenerationSourceSchema,
   LessonPlanSchema,
+  type GenerationSource,
   type LessonPlan,
   type LessonPlanRequest,
 } from "@/src/logic";
@@ -47,6 +49,7 @@ export function LessonPlanWorkspace({
   const [message, setMessage] = useState("A complete sample plan is ready to edit.");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [model, setModel] = useState<string | null>(null);
+  const [generationSource, setGenerationSource] = useState<GenerationSource | null>(null);
 
   const handleContextChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -102,8 +105,18 @@ export function LessonPlanWorkspace({
           ? payload.model
           : "gpt-5.6",
       );
+      const source = GenerationSourceSchema.safeParse(
+        typeof payload === "object" && payload !== null && "source" in payload
+          ? payload.source
+          : undefined,
+      );
+      setGenerationSource(source.success ? source.data : "live");
       setGenerationState("success");
-      setMessage("New plan generated. Review and edit every section before the session.");
+      setMessage(
+        source.success && source.data === "mock"
+          ? "Mock GPT-5.6 response loaded locally. Review and edit every section before use."
+          : "Live GPT-5.6 plan generated. Review and edit every section before the session.",
+      );
     } catch (error) {
       setGenerationState("error");
       setMessage(
@@ -161,23 +174,40 @@ export function LessonPlanWorkspace({
             <span aria-hidden="true">{generationState === "loading" ? "···" : "✦"}</span>
             {generationState === "loading" ? "Generating with GPT-5.6" : "Generate with GPT-5.6"}
           </button>
-          <span className="live-action-note">Optional live GPT-5.6 action · requires a server API key</span>
+          <span className="live-action-note">
+            Uses a highlighted local mock without a key · uses live GPT-5.6 when configured
+          </span>
           <p className={`generation-message ${generationState}`} aria-live="polite">
             {message}
           </p>
         </form>
       </article>
 
-      <article className="panel plan-panel" id="lesson-plan">
+      <article
+        className={`panel plan-panel${generationSource === "mock" ? " mock-response" : ""}`}
+        id="lesson-plan"
+      >
         <header className="panel-header">
           <div><span className="panel-index">02</span><h3>Lesson plan</h3></div>
-          <span className={`status ${model ? "status-ready" : "status-neutral"}`}>
-            {model ? "GPT-5.6 generated" : "Sample plan"}
+          <span className={`status ${generationSource === "mock" ? "status-mock" : model ? "status-ready" : "status-neutral"}`}>
+            {generationSource === "mock" ? "Mock GPT-5.6" : model ? "GPT-5.6 generated" : "Sample plan"}
           </span>
         </header>
+        {generationSource === "mock" ? (
+          <div className="mock-response-banner" role="status">
+            <strong>Mock GPT-5.6 response</strong>
+            <span>Generated locally from this context. No OpenAI API call was made.</span>
+          </div>
+        ) : null}
         <div className="plan-toolbar">
           <span>45 minutes · 4-part plan</span>
-          <span>{model ? `Model: ${model}` : "Every section is editable"}</span>
+          <span>
+            {generationSource === "mock"
+              ? `Schema target: ${model} · mock fixture`
+              : model
+                ? `Model: ${model}`
+                : "Every section is editable"}
+          </span>
         </div>
         <div className="editable-plan">
           <section className="plan-section">

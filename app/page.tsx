@@ -168,7 +168,7 @@ export default function Home() {
           <a href="/privacy">Privacy</a>
           <a href="/api/health">Health</a>
         </nav>
-        <span>v1.0.0 · Submission release</span>
+        <span>v1.1.0 · Mock-ready release</span>
       </footer>
     </main>
   );

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { honestyGateCheck } from "@/src/logic/honesty-gate";
 import {
   ParentReportGenerationError,
@@ -30,11 +30,26 @@ function post(body: string, contentLength?: number) {
 }
 
 describe("POST /api/parent-report", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("returns an explicitly labeled mock report when the API key is absent", async () => {
+    vi.stubEnv("OPENAI_API_KEY", "");
+    const response = await createParentReportHandler()(post(JSON.stringify(validContext)));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.source).toBe("mock");
+    expect(body.model).toBe("gpt-5.6");
+    expect(body.honestyCheck.passed).toBe(true);
+    expect(body.report.referencedAttemptIds).toEqual(["practice-3", "practice-4"]);
+  });
+
   it("returns an evidence-grounded report from the injected generator", async () => {
     if (!honestyCheck.passed) throw new Error("Synthetic report must pass the gate.");
     const generate = vi.fn<ParentReportGenerator>().mockResolvedValue({
       report: tuesdayScenario.parentReport,
       model: "gpt-5.6-sol",
+      source: "live",
       honestyCheck,
     });
     const response = await createParentReportHandler({ generate })(
@@ -46,6 +61,7 @@ describe("POST /api/parent-report", () => {
     expect(await response.json()).toEqual({
       report: tuesdayScenario.parentReport,
       model: "gpt-5.6-sol",
+      source: "live",
       honestyCheck,
     });
     expect(generate).toHaveBeenCalledWith(validContext);
@@ -66,6 +82,7 @@ describe("POST /api/parent-report", () => {
     const generate = vi.fn<ParentReportGenerator>().mockResolvedValue({
       report: tuesdayScenario.parentReport,
       model: "gpt-5.6-sol",
+      source: "live",
       honestyCheck,
     });
     const staleContext = {
@@ -93,7 +110,6 @@ describe("POST /api/parent-report", () => {
   });
 
   it.each([
-    ["missing_api_key", 503],
     ["generation_refused", 422],
     ["honesty_gate_failed", 422],
     ["provider_failure", 502],
