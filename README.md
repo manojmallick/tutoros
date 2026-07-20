@@ -22,6 +22,7 @@ independent tutor for the real work that happens after every lesson.
 - [Why TutorOS](#why-tutoros)
 - [Architecture](#architecture)
 - [How it works](#how-it-works)
+- [Built with Codex and GPT-5.6](#built-with-codex-and-gpt-56)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
 - [Project Structure](#project-structure)
@@ -143,6 +144,57 @@ remain deterministic in both cases.
    generation returns source attempt IDs, then the Honesty Gate checks them against the evidence.
 9. **Require human sign-off.** Copy remains disabled until the current evidence, derived brief, and
    report pass sign-off together. Editing evidence or wording revokes that approval.
+
+## Built with Codex and GPT-5.6
+
+### How Codex was used
+
+TutorOS was planned, implemented, tested, documented, and released through one primary Codex task:
+`019f74c8-b8f0-7be3-bb77-d619e28f77cb`. The task carried the project from the education plan through
+nine versioned slices—including deployment hardening—the 1.0 submission release, and the 1.1
+credential-free mock fallback. Codex inspected the codebase, created focused branches and pull
+requests, implemented each vertical slice, ran the release checks, and merged only after CI passed.
+
+The repository preserves that workflow in its issue-to-PR history. The detailed model evidence and
+artifact mapping are recorded in [GPT56_EVIDENCE.md](GPT56_EVIDENCE.md).
+
+### Important decisions made with Codex
+
+| Decision | Why it matters | Result in the repository |
+|---|---|---|
+| Keep mastery and scheduling deterministic. | A tutor must be able to inspect why a learner was classified and when review was scheduled. | `calculateMasteryDecision` exposes weights, overrides, status, interval, and reason. |
+| Treat evidence provenance as data, not prose. | Generated wording must not invent what happened in the lesson. | Next-session briefs and reports carry exact attempt IDs and observations. |
+| Put a deterministic Honesty Gate after report drafting. | Fluent output is not sufficient if it softens struggle or cites missing evidence. | `honestyGateCheck` blocks four named integrity failures before sign-off. |
+| Make human approval revocable. | Editing evidence after approval must invalidate downstream decisions. | Evidence edits mark outputs stale and revoke tutor sign-off. |
+| Keep the judge path credential-free. | Judges should be able to test the complete loop without secrets or a rebuild. | Missing API credentials return visibly labeled local mocks with `source: "mock"`. |
+| Never present a fixture as model output. | The public demo must distinguish simulation from a live API response. | Mock banners state that no OpenAI call was made; live responses use `source: "live"`. |
+
+### Precise GPT-5.6 contribution
+
+The primary Codex task above was run with `gpt-5.6-sol`. Local Codex session metadata records that
+model throughout the task; the same task ID is supplied in the Devpost `/feedback` field so the
+organizers can verify it. GPT-5.6 in Codex helped design and implement the deterministic evidence
+core, GPT-5.6 structured-output adapters, Honesty Gate, next-session provenance, benchmark,
+trajectory, sign-off, release checks, and credential-free fallback.
+
+TutorOS also contains optional server-side runtime adapters that request `gpt-5.6` for structured
+lesson plans and parent reports when `OPENAI_API_KEY` is configured. The public deployment does not
+have that credential. Its highlighted fallback responses are deterministic local fixtures shaped
+like the validated live response, not GPT-5.6 or ChatGPT output.
+
+### Judge test path — no rebuild, account, or API key
+
+1. Open the [public TutorOS demo](https://tutoros-sand.vercel.app).
+2. Select **Start 90-second demo** to load the synthetic Maya session.
+3. Select **See the 12/12 benchmark** to inspect the named production-logic fixtures.
+4. Change Attempt 4 from **Incorrect** to **Correct**, then select **Update mastery decision**.
+5. Confirm the mastery state, review date, trajectory, and next-session brief change together.
+6. Generate a lesson or report and confirm the purple **Mock GPT-5.6 response** notice says that no
+   API call was made.
+7. Open **Tutor sign-off**, approve the current packet, and confirm copying becomes available.
+
+The deployment uses only fictional sample data and resets on reload. Judges who prefer a local run
+can use the commands below, but rebuilding is not required to evaluate the submitted product.
 
 ## Quick Start
 
