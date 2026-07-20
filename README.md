@@ -1,119 +1,166 @@
 # TutorOS
 
-TutorOS turns what actually happened in a tutoring session into the next teaching decision,
-the next lesson brief, and an evidence-grounded parent update. Version 1.0.0 packages the
-judge-ready, no-login workflow with measured integrity, operational health, privacy guidance,
-submission copy, and an artifact-first demo script.
+**Turn tutoring-session evidence into the next teaching decision and an honest parent update.**
 
-## Evidence chain
+![License](https://img.shields.io/github/license/manojmallick/tutoros?style=flat-square)
+![Language](https://img.shields.io/badge/language-TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-GPT--5.6_optional-412991?style=flat-square&logo=openai&logoColor=white)
+![Project context](https://img.shields.io/badge/OpenAI_Build_Week-Education-0F766E?style=flat-square)
 
-1. Start with the previous lesson and the student&apos;s current struggle.
-2. Shape a focused 45-minute lesson plan.
-3. Capture concrete breakthroughs and difficulties during the session.
-4. Turn that evidence into a mastery decision with a transparent review date.
-5. Carry the decision into a five-minute retrieval task, support progression, next focus, mastery
-   check, and honest parent update.
-6. Require the tutor to review and sign off the current evidence, next step, and parent wording
-   before the update can be copied.
+Independent tutors leave each session with useful observations, then manually turn them into the
+next lesson, a review schedule, and a parent update. TutorOS connects those tasks: it validates an
+editable evidence log, derives deterministic mastery and next-session decisions, and optionally
+uses GPT‑5.6 for structured lesson plans and report drafts. It was built by an independent tutor for
+the real work that happens after every lesson.
 
-The public demo uses synthetic student data. Do not enter real student or minor data into this
-foundation build.
+[Try the synthetic public demo](https://tutoros-sand.vercel.app)
 
-## 90-second judge walkthrough
+## Table of Contents
 
-1. Read Maya’s parent update in the first viewport and note the visible Honesty Gate proof.
-2. Open **See the 12/12 benchmark** and inspect the named mastery, report-integrity, and provenance
-   checks. The score is calculated from production logic and can be reproduced with `pnpm benchmark`.
-3. Select **Start 90-second demo**, then inspect the preloaded 45-minute lesson plan.
-4. Read **Three-session learner trajectory**: Maya moves from 45% to 63%, then 60% with a recent
-   independent transfer gap rather than a falsely smooth improvement story.
-5. In **Session evidence**, change Attempt 4 from Incorrect to Correct and select **Update mastery
-   decision**. The latest trajectory point becomes 85% Secure, direction becomes Ready to extend,
-   and review moves from 2026-07-17 to 2026-07-28.
-6. Open **Next session** to see the brief change from model-prompt-independent remediation to
-   independent retrieval, transfer, and stretch. Its review target and breakthrough remain linked
-   to the exact attempt observations; **Generate next lesson with GPT-5.6** is optional.
-7. Open **Tutor sign-off** and select **Review and sign off**. Only then does **Copy parent update**
-   become available; no credentials are required for this governance check.
-8. Change evidence or parent wording to see sign-off revoked, then select **Reset demo** to restore
-   Maya’s original three-session trajectory, unsigned packet, report, and Honesty Gate state.
+- [Why TutorOS](#why-tutoros)
+- [Architecture](#architecture)
+- [How it works](#how-it-works)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Project Structure](#project-structure)
+- [Privacy and data handling](#privacy-and-data-handling)
+- [Honest Status](#honest-status)
+- [Roadmap](#roadmap)
+- [License](#license)
 
-The spark-marked generation actions require `OPENAI_API_KEY`. All other steps—including editing
-evidence, deterministic mastery scheduling, reviewing source traces, copying the report, and
-resetting the walkthrough—work without credentials. Editing evidence marks the brief stale until
-mastery is recomputed, so an old generated lesson cannot be mistaken for the current decision.
+## Why TutorOS
 
-## Develop
+| After-session pain | TutorOS response | Verifiable implementation |
+|---|---|---|
+| Notes are disconnected from the next lesson. | Carries the latest difficulty and breakthrough into a next-session brief. | `deriveNextSessionBrief` preserves source attempt IDs and observations. |
+| A strong average can hide a recent independent miss. | Uses outcome and support weights, then applies decline and independent-miss overrides. | `calculateMasteryDecision` returns the score, status, signals, interval, date, and reason. |
+| Parent updates drift into generic praise. | Checks citations, generic praise, softened mastery language, and omitted difficulties. | `honestyGateCheck` blocks drafts that fail those rules. |
+| Edited evidence can leave old outputs looking current. | Marks the trajectory, brief, report check, and sign-off stale after evidence changes. | The client workspace requires recomputation and revokes prior approval. |
+| Human review can become a decorative badge. | Recomputes the brief and re-runs the Honesty Gate before enabling copy. | `createTutorSignOff` rejects stale or dishonest decision packets. |
+| Product-integrity claims are hard to inspect. | Runs named synthetic fixtures against the production decision functions. | `pnpm benchmark` prints the measured pass count and every observed result. |
 
-Requirements: Node.js 24 and pnpm 10.
+## Architecture
+
+```mermaid
+flowchart LR
+  subgraph UI["🧑‍🏫 Tutor workspace"]
+    A["Synthetic scenario or editable lesson context"]
+    B["Editable outcomes, support levels, and observations"]
+  end
+
+  subgraph Validation["🧱 Validation boundary"]
+    C["Zod lesson and evidence schemas"]
+    D["Request size and JSON validation"]
+  end
+
+  subgraph Core["⚙️ Deterministic evidence core"]
+    E["Weighted mastery score"]
+    F{"Decline or independent miss?"}
+    G["Needs reinforcement · 3-day review"]
+    H{"Score below 80?"}
+    I["Developing · 7-day review"]
+    J["Secure · 14-day review"]
+    K["Three-session trajectory"]
+    L["Evidence-grounded next-session brief"]
+  end
+
+  subgraph AI["✦ Optional GPT‑5.6 generation"]
+    M{"OPENAI_API_KEY configured?"}
+    N["Responses API with Zod Structured Outputs"]
+    O["Editable 45-minute lesson plan"]
+    P["Editable parent-report draft with source IDs"]
+  end
+
+  subgraph Governance["🛡️ Governance"]
+    Q{"Honesty Gate passes?"}
+    R["Block draft and preserve the last safe report"]
+    S{"Tutor sign-off matches current evidence?"}
+  end
+
+  subgraph Outputs["📦 Outputs"]
+    T["Review date, support progression, and mastery check"]
+    U["Copy-enabled parent update"]
+  end
+
+  A --> C --> M
+  M -- "Yes" --> D --> N --> O
+  M -- "No" --> O
+  B --> C --> E --> F
+  F -- "Yes" --> G
+  F -- "No" --> H
+  H -- "Yes" --> I
+  H -- "No" --> J
+  G --> K
+  I --> K
+  J --> K
+  G --> L
+  I --> L
+  J --> L
+  L --> T
+  B --> P
+  N --> P
+  P --> Q
+  Q -- "No" --> R
+  Q -- "Yes" --> S
+  L --> S
+  S -- "Yes" --> U
+  B -. "Any edit revokes current state" .-> S
+```
+
+The preloaded plan and report make the full evidence workflow usable without an API key. Live
+generation is an optional branch; mastery scheduling, trajectory, provenance, the Honesty Gate,
+and tutor sign-off remain deterministic.
+
+## How it works
+
+1. **Load a safe scenario.** The home route builds Maya's synthetic Tuesday session, derives its
+   mastery decision, next-session brief, trajectory, and Honesty Gate result, then runs the evidence
+   benchmark before rendering.
+2. **Review or edit the lesson plan.** The sample contains a 5-minute warm-up, 20-minute core
+   teaching block, 15-minute practice sequence, and 5-minute mastery check. Every teaching section
+   is editable.
+3. **Optionally generate a new plan.** `POST /api/lesson-plan` validates five context fields and
+   requests a structured plan from the OpenAI Responses API. Four practice problems must progress
+   through supported, guided, independent, and stretch difficulty.
+4. **Record evidence.** Each attempt stores an outcome (`correct`, `partial`, or `incorrect`), a
+   support level (`independent`, `prompted`, or `modeled`), and an observation.
+5. **Calculate the next review.** TutorOS combines outcome and support weights. A declining
+   three-attempt sequence or any incorrect independent attempt forces reinforcement and a 3-day
+   review; otherwise score boundaries select a 7- or 14-day interval.
+6. **Close the teaching loop.** The latest difficult attempt becomes the review target. The latest
+   correct attempt becomes the breakthrough source when available. Those observations shape the
+   opening retrieval task, support progression, mastery check, and optional next lesson.
+7. **Show the trajectory.** Exactly three chronological sessions are recalculated through the same
+   mastery function. The latest session remains the governing evidence.
+8. **Draft and govern the parent update.** The preloaded report works offline. Optional live
+   generation returns source attempt IDs, then the Honesty Gate checks them against the evidence.
+9. **Require human sign-off.** Copy remains disabled until the current evidence, derived brief, and
+   report pass sign-off together. Editing evidence or wording revokes that approval.
+
+## Quick Start
+
+### Prerequisites
+
+| Tool | Required version |
+|---|---|
+| Node.js | 24 |
+| pnpm | 10 (`packageManager` pins `10.33.2`) |
+
+### Run locally
 
 ```bash
+git clone https://github.com/manojmallick/tutoros.git
+cd tutoros
 pnpm install
 cp .env.example .env.local
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The editable synthetic sample works
-without credentials. Add `OPENAI_API_KEY` to `.env.local` to generate new plans.
+Open [http://localhost:3000](http://localhost:3000). The synthetic workflow works immediately.
+Set `OPENAI_API_KEY` in `.env.local` only if you want to use the spark-marked generation actions.
 
-The key is read only by `POST /api/lesson-plan` on the server and is never sent to the browser.
-The route uses the OpenAI Responses API, the `gpt-5.6` model alias, and Zod Structured Outputs
-to produce a validated 45-minute plan with four increasing-difficulty practice problems.
-
-`POST /api/parent-report` uses the same server-only Responses API pattern. It returns a validated
-3-4 sentence draft plus the IDs of the session attempts used as evidence. The deterministic
-Honesty Gate runs before that draft reaches the browser: it rejects unknown evidence, generic
-praise, softened non-secure mastery, and reports that omit a recorded difficulty. The UI shows the
-gate result and source observations explicitly, retains the last safe draft on failure, and keeps
-the final wording editable for tutor review.
-
-The session evidence panel records an outcome, support level, and observation for each practice
-attempt. Its mastery scheduler is a transparent TutorOS product heuristic: it weights outcomes by
-the support used, schedules developing evidence sooner, and forces a three-day review when recent
-attempts decline or an independent attempt is incorrect. It is deterministic, runs entirely in the
-browser, and uses the recorded ISO session date for UTC-safe review dates. It is not presented as a
-validated learning-science model.
-
-The next-session brief is also deterministic and schema-validated. It selects the latest difficult
-attempt as the retrieval target (or the latest attempt after a secure session), retains the latest
-independent breakthrough as provenance, and differentiates the support sequence for Needs
-reinforcement, Developing, and Secure decisions. Its optional GPT-5.6 action reuses the validated
-lesson-plan endpoint; an API failure never replaces the credential-free brief.
-
-The learner trajectory accepts exactly three chronologically ordered session records and derives
-every point through the same mastery scheduler used by the editable workspace. It reports score,
-status, review interval, independent success, and support use without averaging away the latest
-independent miss. The first two synthetic sessions remain fixed while Tuesday recomputes live.
-
-Tutor sign-off is a deterministic integrity boundary, not a decorative approval badge. It
-revalidates current evidence, recomputes the next-session brief and its exact sources, and runs the
-parent wording through the Honesty Gate. Evidence or wording edits revoke approval, and the parent
-update cannot be copied until the current packet is signed off.
-
-The Evidence Integrity Benchmark runs 12 named synthetic adversarial fixtures through those same
-production functions: four mastery-scheduling checks, four Honesty Gate checks, and four
-closed-loop provenance checks. It records expected and observed behavior for every case, derives
-its category totals from the results, and fails the benchmark command if any regression appears.
-It is a product regression suite, not a claim that TutorOS is a validated learning-science model.
-
-The submission release includes a no-store health contract, a strict canonical-URL preflight,
-browser security headers, generation-request size limits, graceful fallback pages, and an explicit
-privacy notice. The app remains useful without `OPENAI_API_KEY`; that credential enables only the
-three optional spark-marked generation actions.
-
-The release evidence is deliberately inspectable: [SUBMISSION.md](SUBMISSION.md) contains the
-paste-ready project story and measured Codex/GPT-5.6 coverage, [CHALLENGES.md](CHALLENGES.md)
-records four exact build problems and fixes, [DEMO_SCRIPT.md](DEMO_SCRIPT.md) keeps the recording
-under three minutes, and [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) separates verified work from
-human submission actions. The repository is provided under the [MIT License](LICENSE).
-
-## Verify
-
-The current suite contains 72 passing tests, including deployment readiness, health and security
-contracts, API request hardening, three-session trajectory and sign-off boundaries, the 12/12
-benchmark contract, mastery
-boundaries and rollover, next-session differentiation and provenance, Honesty Gate regressions,
-generation routes, and deployment URL normalization.
+### Verify the repository
 
 ```bash
 pnpm typecheck
@@ -123,53 +170,120 @@ pnpm test
 pnpm build
 ```
 
-For a production candidate environment, validate the final canonical URL separately:
+The benchmark command reports its actual total, per-category totals, and every observed result. It
+exits unsuccessfully if a production-logic fixture regresses.
+
+Validate a production environment separately:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=https://your-final-domain.example pnpm deployment:check
 ```
 
-This command intentionally fails for missing, malformed, HTTP, credential-bearing, or local URLs.
-It reports `OPENAI_API_KEY` as an optional capability and never prints its value.
+The deployment check requires a non-local HTTPS URL. `OPENAI_API_KEY` remains optional.
 
-## Project structure
+## Configuration
 
-- `app/` — Next.js page, layout, global styles, and metadata routes.
-- `app/api/` — health plus validated, no-store server-only GPT-5.6 endpoints.
-- `src/logic/` — domain model, trajectory and sign-off engines, benchmark, fixtures, and tests.
-- `lib/deployment/` — production readiness and browser security contracts.
-- `lib/seo/` — shared metadata and structured-data helpers.
-- `TUTOROS_EDUCATION_PLAN.md` — hackathon product and delivery plan.
-- `SUBMISSION.md` — paste-ready Education entry, measured coverage, and live links.
-- `CHALLENGES.md` — real engineering challenge diary with exact fixes.
-- `DEMO_SCRIPT.md` — artifact-first 2:45 recording script.
-- `RELEASE_CHECKLIST.md` — verified release proof and remaining human actions.
+### Environment variables
 
-## Deploy to Vercel
+| Variable | Default | Purpose |
+|---|---|---|
+| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Canonical URL for metadata, robots, sitemap, health, and production-readiness checks. Production requires a non-local HTTPS URL. |
+| `OPENAI_API_KEY` | Unset | Server-only credential for both generation endpoints. The synthetic and deterministic flows do not require it. |
+| `TUTOROS_BENCHMARK_REPORT` | Unset | Set to `1` by `pnpm benchmark` so Vitest prints the benchmark report. |
+| `TUTOROS_DEPLOYMENT_CHECK` | Unset | Set to `1` by `pnpm deployment:check` so the readiness test evaluates the current environment. |
 
-Current public deployment: [https://tutoros-sand.vercel.app](https://tutoros-sand.vercel.app).
-Vercel reports the deployment as Ready; complete the human smoke checklist in
-`RELEASE_CHECKLIST.md` before submitting it as the final judge URL.
+### Important in-code constants
 
-1. Import this repository into Vercel as a Next.js project.
-2. Set `NEXT_PUBLIC_SITE_URL` to the final public HTTPS URL for Production and Preview as
-   appropriate. Do not use localhost or a placeholder URL for Production.
-3. Optionally set the server-only `OPENAI_API_KEY` to enable the two generation endpoints across
-   three UI actions. Never expose it with a `NEXT_PUBLIC_` prefix.
-4. Run `pnpm deployment:check`, `pnpm benchmark`, and `pnpm build` against the candidate
-   environment before promoting it.
-5. Deploy through the linked Git branch or `vercel deploy`.
+| Variable or rule | Default | Purpose |
+|---|---|---|
+| `LESSON_PLAN_MODEL` | `gpt-5.6` | Model requested for structured lesson-plan generation. |
+| `PARENT_REPORT_MODEL` | `gpt-5.6` | Model requested for structured parent-report generation. |
+| Lesson-plan output budget | `3,500` tokens | `max_output_tokens` passed to the Responses API for a lesson plan. |
+| Parent-report output budget | `1,200` tokens | `max_output_tokens` passed to the Responses API for a report draft. |
+| `MAX_GENERATION_REQUEST_BYTES` | `32 * 1024` bytes | Rejects declared generation requests above 32 KiB. |
+| Outcome weights | Correct `1`; partial `0.5`; incorrect `0` | Converts attempt outcomes into evidence values. |
+| Support weights | Independent `1`; prompted `0.8`; modeled `0.6` | Discounts success that required more tutor support. |
+| Mastery boundaries | `<50`, `<80`, otherwise | Maps scores to Needs reinforcement, Developing, or Secure when no override applies. |
+| Review intervals | `3`, `7`, or `14` days | Schedules reinforcement, developing retrieval, or secure retrieval in UTC. |
+| Evidence limits | `1–12` attempts | Bounds a validated session evidence record. |
 
-After deployment, verify:
+Both generation routes use low reasoning effort, no-store JSON responses, Zod validation, and
+actionable `400`, `413`, `422`, `502`, or `503` error responses where applicable.
 
-```bash
-curl -i https://your-final-domain.example/api/health
-curl -I https://your-final-domain.example/
+## Project Structure
+
+```text
+tutoros/
+├── app/page.tsx                           # Server entry: scenario, benchmark, and derived outputs
+├── app/components/lesson-plan-workspace.tsx # Editable context and lesson-plan generation
+├── app/components/session-evidence-workspace.tsx # Evidence, mastery, report, and sign-off state
+├── app/components/next-session-brief-panel.tsx # Deterministic brief and optional generation
+├── app/components/learner-trajectory-panel.tsx # Three-session evidence trajectory
+├── app/components/evidence-benchmark.tsx  # Measured fixture results
+├── app/api/lesson-plan/route.ts            # Validated lesson-plan endpoint
+├── app/api/parent-report/route.ts          # Validated report endpoint plus Honesty Gate
+├── app/api/health/route.ts                 # Version, benchmark, URL, and capability health
+├── app/privacy/page.tsx                    # Public data-handling notice
+├── src/logic/mastery.ts                    # Evidence weighting, overrides, and scheduling
+├── src/logic/next-session-brief.ts         # Review target, provenance, and support progression
+├── src/logic/learner-trajectory.ts         # Three-session trajectory and tutor sign-off
+├── src/logic/honesty-gate.ts               # Report-integrity rules
+├── src/logic/lesson-plan.ts                 # Lesson request and structured-output schemas
+├── src/logic/parent-report.ts               # Report request and structured-output schemas
+├── src/logic/generate-lesson-plan.ts        # OpenAI lesson-plan adapter
+├── src/logic/generate-parent-report.ts      # OpenAI report adapter
+├── src/logic/evidence-integrity-benchmark.ts # Named production-logic fixtures
+├── src/logic/tuesday-scenario.ts            # Preloaded synthetic Maya scenario
+├── lib/deployment/readiness.ts              # Canonical URL readiness contract
+├── lib/deployment/security-headers.ts       # Browser security policy
+├── lib/http/api-response.ts                 # Request-size and no-store response helpers
+├── lib/seo/metadata.ts                      # Shared metadata
+├── lib/seo/site-url.ts                      # Canonical URL fallback
+├── .github/workflows/build.yml          # Install, typecheck, lint, benchmark, test, and build
+├── .env.example                         # Local environment template
+├── next.config.ts                       # Global security headers
+└── vercel.ts                            # Vercel framework, build, and static-cache config
 ```
 
-The health response should be `200`, show version `1.0.0`, report the real `12/12` Evidence
-Integrity Benchmark, and describe live generation only as `configured` or
-`optional_not_configured`. Confirm `/privacy`, `/manifest.webmanifest`, an unknown route, the
-credential-free judge path, tutor sign-off, and mobile layout. Generation endpoints should return
-an actionable `503` when the optional key is absent. The release documents claim only URLs that
-were actually created; production promotion remains an explicit post-merge action.
+## Privacy and data handling
+
+- The bundled Maya scenario is fictional. Do not enter real student or minor data into the public
+  demo.
+- This release has no account system, database, analytics tracker, or application persistence.
+  Browser edits disappear when the page reloads or the demo resets.
+- `OPENAI_API_KEY` is read only on the server. It is never exposed with a `NEXT_PUBLIC_` prefix.
+- Spark-marked generation sends the submitted tutoring context from the TutorOS server to OpenAI.
+- API responses use `Cache-Control: no-store`. Generated drafts are not sent to parents
+  automatically.
+- A tutor must review and sign off the current packet before the parent update can be copied.
+
+See the in-app [privacy notice](https://tutoros-sand.vercel.app/privacy) for the public deployment
+wording.
+
+## Honest Status
+
+TutorOS 1.0 is a runnable, public demonstration built around synthetic data. Its deterministic path
+works without credentials, while live lesson and report generation requires an OpenAI API key.
+
+The mastery scheduler is a transparent product heuristic. It is not a validated learning-science
+model, diagnostic instrument, or guarantee of student outcomes. The Evidence Integrity Benchmark
+tests software behavior with synthetic adversarial fixtures; it does not measure educational
+efficacy. There is currently no multi-user support, durable history, account system, or workflow for
+handling real learner records.
+
+## Roadmap
+
+These are proposed next steps, not shipped commitments:
+
+- [ ] Evaluate the mastery heuristic with working tutors before changing its score boundaries or
+  review intervals.
+- [ ] Expand adversarial fixtures for stale artifacts, edited reports, provenance, and sign-off.
+- [ ] Add automated browser coverage for the credential-free flow and optional generation errors.
+- [ ] Design consent, retention, deletion, and access controls before adding persistence or real
+  learner records.
+- [ ] Add authenticated, durable session history only after the privacy model is defined and
+  reviewed.
+
+## License
+
+Licensed under the [MIT License](LICENSE). Copyright © 2026 Manoj Mallick.
