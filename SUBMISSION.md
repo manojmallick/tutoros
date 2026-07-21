@@ -97,6 +97,7 @@ Education
 - Repository: https://github.com/manojmallick/tutoros
 - Public judge path: https://tutoros-sand.vercel.app
 - Devpost project: https://devpost.com/software/tutoros
+- Devpost thumbnail source: `submission-assets/tutoros-devpost-thumbnail.png` (3:2 PNG)
 
 ## Devpost submission fields
 
