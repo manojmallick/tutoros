@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">TutorOS evidence loop architecture</title>
+  <desc id="desc">Session evidence flows through validation and deterministic mastery decisions, then optional GPT-5.6 drafting, an Honesty Gate, and tutor sign-off before producing the next lesson and parent update.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#155f55"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#132d2a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .sans { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .serif { font-family: Georgia, "Times New Roman", serif; }
+      .eyebrow { font-size: 18px; font-weight: 700; letter-spacing: 3px; fill: #155f55; }
+      .title { font-size: 58px; font-weight: 600; fill: #132d2a; }
+      .layer { font-size: 15px; font-weight: 800; letter-spacing: 2px; fill: #155f55; }
+      .node-title { font-size: 23px; font-weight: 750; fill: #132d2a; }
+      .node-copy { font-size: 17px; fill: #53615e; }
+      .small { font-size: 15px; fill: #53615e; }
+      .arrow { stroke: #155f55; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .dash { stroke-dasharray: 9 8; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="900" fill="#fffdf8"/>
+  <text x="72" y="70" class="sans eyebrow">TUTOROS · REAL DATA FLOW</text>
+  <text x="72" y="132" class="serif title">Evidence in. Defensible decisions out.</text>
+  <text x="72" y="176" class="sans node-copy">Generation is optional. Mastery, provenance, governance, and approval stay deterministic.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="72" y="240" width="280" height="410" rx="24" fill="#f3f5ed" stroke="#d6ddd8"/>
+    <rect x="390" y="240" width="350" height="410" rx="24" fill="#ffffff" stroke="#d6ddd8"/>
+    <rect x="778" y="240" width="280" height="410" rx="24" fill="#f3f5ed" stroke="#d6ddd8"/>
+    <rect x="1096" y="240" width="272" height="410" rx="24" fill="#132d2a"/>
+  </g>
+
+  <text x="104" y="284" class="sans layer">1 · INPUTS</text>
+  <rect x="104" y="315" width="216" height="118" rx="16" fill="#ffffff" stroke="#d6ddd8"/>
+  <text x="128" y="351" class="sans node-title">Lesson context</text>
+  <text x="128" y="382" class="sans node-copy">Learner · topic</text>
+  <text x="128" y="408" class="sans node-copy">duration · goal</text>
+  <rect x="104" y="454" width="216" height="154" rx="16" fill="#ffffff" stroke="#d6ddd8"/>
+  <text x="128" y="490" class="sans node-title">Session evidence</text>
+  <text x="128" y="521" class="sans node-copy">Outcome · support</text>
+  <text x="128" y="547" class="sans node-copy">observation · date</text>
+  <text x="128" y="580" class="sans small">Validated with Zod</text>
+
+  <text x="422" y="284" class="sans layer">2 · DETERMINISTIC CORE</text>
+  <rect x="422" y="315" width="286" height="90" rx="16" fill="#e9f4ef" stroke="#b9d8ca"/>
+  <text x="446" y="352" class="sans node-title">Mastery decision</text>
+  <text x="446" y="381" class="sans small">Weights + decline / independent-miss rules</text>
+  <path d="M565 405 L565 433" class="arrow"/>
+  <rect x="422" y="439" width="286" height="90" rx="16" fill="#f6f6e8" stroke="#dbe89c"/>
+  <text x="446" y="476" class="sans node-title">Next-session brief</text>
+  <text x="446" y="505" class="sans small">Review target + breakthrough source IDs</text>
+  <path d="M565 529 L565 557" class="arrow"/>
+  <rect x="422" y="563" width="286" height="55" rx="16" fill="#fff5e6" stroke="#e3c695"/>
+  <text x="446" y="598" class="sans node-title">3-session trajectory</text>
+
+  <text x="810" y="284" class="sans layer">3 · OPTIONAL DRAFTING</text>
+  <rect x="810" y="315" width="216" height="112" rx="16" fill="#ffffff" stroke="#d6ddd8"/>
+  <text x="834" y="351" class="sans node-title">API key?</text>
+  <text x="834" y="382" class="sans node-copy">Yes → GPT-5.6</text>
+  <text x="834" y="408" class="sans node-copy">No → labeled mock</text>
+  <path d="M918 427 L918 455" class="arrow dash"/>
+  <rect x="810" y="461" width="216" height="147" rx="16" fill="#ffffff" stroke="#d6ddd8"/>
+  <text x="834" y="497" class="sans node-title">Editable drafts</text>
+  <text x="834" y="528" class="sans node-copy">45-minute lesson</text>
+  <text x="834" y="554" class="sans node-copy">Parent update</text>
+  <text x="834" y="584" class="sans small">Structured, schema-checked</text>
+
+  <text x="1128" y="284" class="sans layer" style="fill:#dbe89c">4 · GOVERNANCE</text>
+  <rect x="1128" y="315" width="208" height="105" rx="16" fill="#24423f" stroke="#4f6b67"/>
+  <text x="1152" y="352" class="sans node-title" style="fill:#fffdf8">Honesty Gate</text>
+  <text x="1152" y="382" class="sans small" style="fill:#c9d3d0">Checks citations, claims,</text>
+  <text x="1152" y="405" class="sans small" style="fill:#c9d3d0">difficulty, mastery language</text>
+  <path d="M1232 420 L1232 451" class="arrow" style="stroke:#dbe89c"/>
+  <rect x="1128" y="457" width="208" height="92" rx="16" fill="#24423f" stroke="#4f6b67"/>
+  <text x="1152" y="494" class="sans node-title" style="fill:#fffdf8">Tutor sign-off</text>
+  <text x="1152" y="523" class="sans small" style="fill:#c9d3d0">Revoked after any edit</text>
+  <path d="M1232 549 L1232 577" class="arrow" style="stroke:#dbe89c"/>
+  <rect x="1128" y="583" width="208" height="35" rx="12" fill="#dbe89c"/>
+  <text x="1152" y="607" class="sans small" style="fill:#132d2a;font-weight:800">APPROVED OUTPUTS</text>
+
+  <path d="M352 445 L390 445" class="arrow"/>
+  <path d="M740 445 L778 445" class="arrow"/>
+  <path d="M1058 445 L1096 445" class="arrow"/>
+
+  <rect x="72" y="704" width="1296" height="116" rx="22" fill="#e9f4ef" stroke="#b9d8ca"/>
+  <text x="104" y="745" class="sans layer">OUTPUTS</text>
+  <text x="104" y="786" class="sans node-title">Next lesson</text>
+  <text x="337" y="786" class="sans node-title">Review date</text>
+  <text x="570" y="786" class="sans node-title">Support progression</text>
+  <text x="865" y="786" class="sans node-title">Parent update</text>
+  <text x="1136" y="786" class="sans node-title">Source trail</text>
+
+  <text x="72" y="866" class="sans small">Synthetic demo data · no login required · every downstream decision can be traced to recorded attempts</text>
+</svg>

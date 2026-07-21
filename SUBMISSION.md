@@ -44,6 +44,25 @@ are not model output. The core proof works without an API key.
 
 ## Additional Devpost sections
 
+### Architecture
+
+Use `submission-assets/tutoros-architecture.png` in the Devpost story. It shows the real boundary
+between validated inputs, deterministic mastery and provenance, optional GPT‑5.6 or labeled local
+mock drafting, the Honesty Gate, tutor sign-off, and approved outputs. The repository README keeps a
+more detailed Mermaid version beside the static image.
+
+### How it looks
+
+All gallery images use the fictional Maya scenario. Suggested Devpost order:
+
+1. `submission-assets/screenshots/01-overview.jpg` — judge-ready overview and final artifact.
+2. `submission-assets/screenshots/02-integrity-benchmark.jpg` — measured integrity benchmark.
+3. `submission-assets/screenshots/03-evidence-and-mastery.jpg` — editable evidence log.
+4. `submission-assets/screenshots/04-learner-trajectory.jpg` — three-session trajectory.
+5. `submission-assets/screenshots/05-next-session-brief.jpg` — closed-loop teaching brief.
+6. `submission-assets/screenshots/06-parent-report.jpg` — grounded report and Honesty Gate.
+7. `submission-assets/screenshots/07-tutor-sign-off.jpg` — revocable human approval.
+
 ### Measured result
 
 The checked-in Evidence Integrity Benchmark runs 12 named fixtures against the production mastery,
@@ -98,6 +117,8 @@ Education
 - Public judge path: https://tutoros-sand.vercel.app
 - Devpost project: https://devpost.com/software/tutoros
 - Devpost thumbnail source: `submission-assets/tutoros-devpost-thumbnail.png` (3:2 PNG)
+- Devpost architecture source: `submission-assets/tutoros-architecture.png` (8:5 PNG)
+- Product gallery: `submission-assets/screenshots/` (seven 16:9 JPEGs)
 
 ## Devpost submission fields
 
