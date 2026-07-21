@@ -20,6 +20,7 @@ independent tutor for the real work that happens after every lesson.
 ## Table of Contents
 
 - [Why TutorOS](#why-tutoros)
+- [How it looks](#how-it-looks)
 - [Architecture](#architecture)
 - [How it works](#how-it-works)
 - [Built with Codex and GPT-5.6](#built-with-codex-and-gpt-56)
@@ -42,7 +43,64 @@ independent tutor for the real work that happens after every lesson.
 | Human review can become a decorative badge. | Recomputes the brief and re-runs the Honesty Gate before enabling copy. | `createTutorSignOff` rejects stale or dishonest decision packets. |
 | Product-integrity claims are hard to inspect. | Runs named synthetic fixtures against the production decision functions. | `pnpm benchmark` prints the measured pass count and every observed result. |
 
+## How it looks
+
+The public demo uses the fictional Maya scenario throughout. No screenshot contains real learner
+data. Open the [deployed experience](https://tutoros-sand.vercel.app) to edit the evidence and watch
+the downstream decisions change.
+
+<table>
+  <tr>
+    <td colspan="2">
+      <strong>1. Judge-ready overview</strong><br />
+      The complete value proposition and final evidence-grounded artifact are visible before any interaction.<br /><br />
+      <img src="submission-assets/screenshots/01-overview.jpg" alt="TutorOS overview with synthetic Maya parent update, mastery, review date, and evidence sources" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <strong>2. Evidence Integrity Benchmark</strong><br />
+      Named synthetic fixtures exercise the production mastery, reporting, and provenance functions.<br /><br />
+      <img src="submission-assets/screenshots/02-integrity-benchmark.jpg" alt="TutorOS Evidence Integrity Benchmark results" />
+    </td>
+    <td width="50%">
+      <strong>3. Session evidence and mastery inputs</strong><br />
+      Tutors record outcomes, support levels, and concrete observations in an editable log.<br /><br />
+      <img src="submission-assets/screenshots/03-evidence-and-mastery.jpg" alt="Editable TutorOS session evidence log and lesson mastery check" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <strong>4. Three-session learner trajectory</strong><br />
+      The latest evidence governs the decision, even when that interrupts an appealing upward trend.<br /><br />
+      <img src="submission-assets/screenshots/04-learner-trajectory.jpg" alt="TutorOS three-session learner trajectory showing a recent transfer gap" />
+    </td>
+    <td width="50%">
+      <strong>5. Closed-loop next-session brief</strong><br />
+      Review target, support progression, and mastery check retain their source observations.<br /><br />
+      <img src="submission-assets/screenshots/05-next-session-brief.jpg" alt="TutorOS next-session brief with review target and carried-forward evidence" />
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <strong>6. Evidence-grounded parent update</strong><br />
+      The editable report names the breakthrough and difficulty, then passes through the Honesty Gate.<br /><br />
+      <img src="submission-assets/screenshots/06-parent-report.jpg" alt="TutorOS parent update with passed Honesty Gate and cited attempts" />
+    </td>
+    <td width="50%">
+      <strong>7. Revocable tutor sign-off</strong><br />
+      Human review is the final boundary; changing evidence or wording revokes approval.<br /><br />
+      <img src="submission-assets/screenshots/07-tutor-sign-off.jpg" alt="TutorOS tutor sign-off panel requiring human review" />
+    </td>
+  </tr>
+</table>
+
 ## Architecture
+
+![TutorOS evidence-loop architecture](submission-assets/tutoros-architecture.png)
+
+The static diagram above is optimized for judging pages and presentations. The Mermaid source below
+keeps the repository's full implementation-level flow inspectable.
 
 ```mermaid
 flowchart LR
